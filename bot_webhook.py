@@ -158,6 +158,6 @@ def process_results_reply(message):
 
 
 if __name__ == "__main__":
-    logging.critical("Starting")
+    logging.critical("Starting webhook")
 
     bot.infinity_polling()

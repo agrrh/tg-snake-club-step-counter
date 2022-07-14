@@ -31,7 +31,7 @@ def send_notify():
 
 
 if __name__ == "__main__":
-    logging.critical("Starting")
+    logging.critical("Starting reminder")
 
     if app_dev_mode:
         logging.warning("Running single dev run")

@@ -21,7 +21,7 @@ notify_time = os.environ.get("APP_TG_NOTIFY_TIME", "21:00")
 
 
 def send_notify():
-    logging.info("Sending notify")
+    logging.warning("Sending notify")
 
     current_date_humanized = date.today().strftime("%d.%m")
 

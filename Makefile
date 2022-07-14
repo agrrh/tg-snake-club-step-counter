@@ -23,7 +23,7 @@ seal:
 		< kubernetes/config.secret.yml \
 		> kubernetes/config.sealedsecret.yml
 
-apply: seal
+apply:
 	kubectl apply -f kubernetes/namespace.yml
 	kubectl apply -f kubernetes/config.sealedsecret.yml
 	kubectl apply -R -f kubernetes/reminder/

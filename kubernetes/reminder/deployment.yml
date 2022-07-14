@@ -1,0 +1,35 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: reminder
+  namespace: tg-step-counter
+  labels:
+    app: tg-step-counter
+    component: reminder
+  annotations:
+      keel.sh/policy: minor
+      keel.sh/trigger: poll
+      keel.sh/pollSchedule: "@every 15m"
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tg-step-counter
+      component: reminder
+
+  template:
+    metadata:
+      labels:
+        app: tg-step-counter
+        component: reminder
+    spec:
+      containers:
+        - name: reminder
+          image: agrrh/tg-step-counter:0.1.0
+
+          # command: [""]
+          args: ["bot_reminder.py"]

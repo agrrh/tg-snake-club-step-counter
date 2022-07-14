@@ -1,0 +1,75 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: webhook
+  namespace: tg-step-counter-dev
+
+  labels:
+    app: tg-step-counter
+    component: webhook
+  annotations:
+      keel.sh/policy: minor
+      keel.sh/trigger: poll
+      keel.sh/pollSchedule: "@every 15m"
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tg-step-counter
+      component: webhook
+
+  template:
+    metadata:
+      labels:
+        app: tg-step-counter
+        component: webhook
+    spec:
+      containers:
+        - name: reminder
+          image: agrrh/tg-step-counter:0.1.2
+
+          env:
+            - name: APP_DEV_MODE
+              value: ""
+
+            - name: APP_TG_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: config
+                  key: tg_token
+
+            - name: APP_TG_USERNAME
+              value: "step_counter_dev_bot"
+
+            - name: APP_GOOGLE_SA_PATH
+              value: ./config/google-service-account.json
+
+            - name: APP_GOOGLE_SHEET_URI
+              valueFrom:
+                secretKeyRef:
+                  name: config
+                  key: google_sheet_uri
+
+          # command: [""]
+          args: ["bot_webhook.py"]
+
+          # NOTE It polls, no port required
+          # ports:
+          #   - containerPort: 8000
+
+          volumeMounts:
+            - name: google-sa
+              mountPath: "/opt/app/config"
+              readOnly: true
+
+      volumes:
+        - name: google-sa
+          secret:
+            secretName: config
+            items:
+              - key: google_sheet_sa_credentials
+                path: google-service-account.json

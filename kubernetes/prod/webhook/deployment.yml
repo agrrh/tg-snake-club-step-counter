@@ -5,7 +5,8 @@ kind: Deployment
 
 metadata:
   name: webhook
-  namespace: tg-step-counter
+  namespace: tg-step-counter-prod
+
   labels:
     app: tg-step-counter
     component: webhook
@@ -40,6 +41,9 @@ spec:
                 secretKeyRef:
                   name: config
                   key: tg_token
+
+            - name: APP_TG_USERNAME
+              value: "step_counter_bot"
 
             - name: APP_GOOGLE_SA_PATH
               value: ./config/google-service-account.json

@@ -4,4 +4,4 @@ apiVersion: v1
 kind: Namespace
 
 metadata:
-  name: tg-step-counter
+  name: tg-step-counter-dev

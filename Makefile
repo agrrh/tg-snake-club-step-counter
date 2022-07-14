@@ -18,13 +18,15 @@ publish: build
 	docker push agrrh/tg-step-counter:$$(git describe --tags --abbrev=0)
 
 seal:
-	test -f kubernetes/config.secret.yml \
+	test -f kubernetes/config-dev.secret.yml \
 	&& kubeseal --controller-name sealed-secrets -o yaml \
-		< kubernetes/config.secret.yml \
-		> kubernetes/config.sealedsecret.yml
+		< kubernetes/config-dev.secret.yml \
+		> kubernetes/dev/config.sealedsecret.yml
+	test -f kubernetes/config-prod.secret.yml \
+	&& kubeseal --controller-name sealed-secrets -o yaml \
+		< kubernetes/config-prod.secret.yml \
+		> kubernetes/prod/config.sealedsecret.yml
 
 apply:
-	kubectl apply -f kubernetes/namespace.yml
-	kubectl apply -f kubernetes/config.sealedsecret.yml
-	kubectl apply -R -f kubernetes/reminder/
-	kubectl apply -R -f kubernetes/webhook/
+	kubectl apply -f kubernetes/dev/
+	kubectl apply -f kubernetes/prod/

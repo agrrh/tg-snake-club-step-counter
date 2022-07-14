@@ -12,6 +12,8 @@ bot_token = os.environ.get("APP_TG_TOKEN")
 google_service_account_fname = os.environ.get("APP_GOOGLE_SA_PATH", "./config/google-service-account.json")
 google_sheet_uri = os.environ.get("APP_GOOGLE_SHEET_URI")
 
+bot_username = os.environ.get("APP_TG_USERNAME", "step_counter_dev_bot")
+
 bot = telebot.TeleBot(bot_token, parse_mode="Markdown")
 
 
@@ -19,7 +21,7 @@ def filter_results_reply(message):
     if message.reply_to_message is None:
         return False
 
-    proper_user = message.reply_to_message.json.get("from", {}).get("username") == "step_counter_bot"
+    proper_user = message.reply_to_message.json.get("from", {}).get("username") == bot_username
     proper_message = message.reply_to_message.json.get("text").startswith("⏰")
 
     return proper_user and proper_message

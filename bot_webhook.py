@@ -70,7 +70,7 @@ def write_results(user_id, result_date, value, username=None):
     users_row_index = 1
 
     users_row = sheet.get_values(f"{users_row_index}:{users_row_index}")[0]
-    logging.warning(users_row)
+    logging.debug(users_row)
 
     if not users_row:
         logging.error("Data seems to be empty")

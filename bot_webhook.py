@@ -21,6 +21,9 @@ def filter_results_reply(message):
     if message.reply_to_message is None:
         return False
 
+    if message.reply_to_message.json.get("text") is None:
+        return False
+
     proper_user = message.reply_to_message.json.get("from", {}).get("username") == bot_username
     proper_message = message.reply_to_message.json.get("text").startswith("⏰")
 

@@ -22,6 +22,9 @@ spec:
       app: tg-step-counter
       component: webhook
 
+  strategy:
+    type: Recreate
+
   template:
     metadata:
       labels:

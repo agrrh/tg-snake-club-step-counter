@@ -51,7 +51,7 @@ spec:
                   key: google_sheet_uri
 
           # command: [""]
-          args: ["bot_reminder.py"]
+          args: ["bot_webhook.py"]
 
           # NOTE It polls, no port required
           # ports:

@@ -1,4 +1,4 @@
-# Snake Club: Step Counter bot
+# Step Counter bot
 
 Есть чатик, члены которого считают шаги и ведут статистику.
 

@@ -17,5 +17,14 @@ publish: build
 	docker tag local/step-counter:dev agrrh/tg-step-counter:$$(git describe --tags --abbrev=0)
 	docker push agrrh/tg-step-counter:$$(git describe --tags --abbrev=0)
 
-apply:
-	kubectl apply -R -f kubernetes/
+seal:
+	test -f kubernetes/config.secret.yml \
+	&& kubeseal --controller-name sealed-secrets -o yaml \
+		< kubernetes/config.secret.yml \
+		> kubernetes/config.sealedsecret.yml
+
+apply: seal
+	kubectl apply -f kubernetes/namespace.yml
+	kubectl apply -f kubernetes/config.sealedsecret.yml
+	kubectl apply -R -f kubernetes/reminder/
+	kubectl apply -R -f kubernetes/webhook/

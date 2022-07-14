@@ -28,5 +28,5 @@ seal:
 		> kubernetes/prod/config.sealedsecret.yml
 
 apply:
-	kubectl apply -f kubernetes/dev/
-	kubectl apply -f kubernetes/prod/
+	kubectl apply -R -f kubernetes/dev/
+	kubectl apply -R -f kubernetes/prod/

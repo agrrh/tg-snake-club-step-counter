@@ -17,6 +17,8 @@ chat_id = os.environ.get("APP_TG_CHAT_ID")
 app_dev_mode = os.environ.get("APP_DEV_MODE")
 challenge_tag = os.environ.get("APP_TG_CHALLENGE_TAG")
 
+notify_time = os.environ.get("APP_TG_NOTIFY_TIME", "21:00")
+
 
 def send_notify():
     logging.info("Sending notify")
@@ -41,7 +43,7 @@ if __name__ == "__main__":
         schedule.run_pending()
         sys.exit()
 
-    schedule.every().day.at("23:59").do(send_notify)
+    schedule.every().day.at(notify_time).do(send_notify)
 
     while True:
         schedule.run_pending()

@@ -48,6 +48,9 @@ spec:
                   name: config
                   key: tg_chat_id
 
+            - name: APP_TG_NOTIFY_TIME
+              value: "23:59"
+
             - name: APP_TG_CHALLENGE_TAG
               value: "#конкурсшаги"
 

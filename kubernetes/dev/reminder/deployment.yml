@@ -33,6 +33,9 @@ spec:
           image: agrrh/tg-step-counter:0.1.6
 
           env:
+            - name: TZ
+              value: "Europe/Moscow"
+
             - name: APP_DEV_MODE
               value: ""
 

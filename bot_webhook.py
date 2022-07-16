@@ -31,7 +31,7 @@ def filter_results_reply(message):
         return False
 
     proper_user = message.reply_to_message.json.get("from", {}).get("username") == bot_username
-    proper_message = message.reply_to_message.json.get("text").startswith("⏰")
+    proper_message = i18n.lang_map.reminder_mark in message.reply_to_message.json.get("text")
 
     return proper_user and proper_message
 

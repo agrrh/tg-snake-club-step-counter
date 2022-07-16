@@ -2,7 +2,7 @@
 
 reminder_mark: ⏰
 reminder_notify: >-
-    Чтобы внести свои результаты по {challenge_tag} за {current_date_humanized}, отправьте число шагов ответом на это сообщение.
+    Чтобы внести свои результаты по {challenge_tag} за {current_date_human}, отправьте число шагов ответом на это сообщение.
 
 webhook_error_parse_count: >-
   К сожалению, не могу найти число в вашем сообщении.
@@ -12,4 +12,7 @@ webhook_error_write_results: >-
   К сожалению, не смог записать результаты, попробуйте позже.
 
 webhook_results_written: >-
-  Спасибо, результаты учтены, ваш общий результат за этот месяц около {monthly_sum_humanized} шагов.
+  Спасибо, результаты учтены, ваш общий результат за этот месяц около {monthly_sum_human} шагов.
+
+webhook_results_monthly: >-
+  Ваши результаты за месяц составили {monthly_sum} шагов.

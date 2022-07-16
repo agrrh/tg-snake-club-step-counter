@@ -1,15 +1,19 @@
 import os
 import logging
-import re
-
-from datetime import datetime
 
 import telebot
 import gspread
 
 from tg_step_counter.i18n import Internationalization as I18n
 
+from tg_step_counter.message_parser import MessageParser
+
+from tg_step_counter.objects.result import Result, ResultPlot
+from tg_step_counter.objects.tg_user import TGUser, TGUserSpreadsheetHandler
+
 bot_token = os.environ.get("APP_TG_TOKEN")
+
+chat_id = os.environ.get("APP_TG_CHAT_ID")
 
 google_service_account_fname = os.environ.get("APP_GOOGLE_SA_PATH", "./config/google-service-account.json")
 google_sheet_uri = os.environ.get("APP_GOOGLE_SHEET_URI")
@@ -36,102 +40,41 @@ def filter_results_reply(message):
     return proper_user and proper_message
 
 
-def parse_results(text):
-    text = text.strip()
-
-    try:
-        value = int(text)
-        return value
-    except ValueError:
-        logging.error("Could not convert message to integer")
-
-    return False
-
-
-def parse_notify(text):
-    text = text.strip()
-
-    try:
-        date_ = re.search(r"[0-9]{2}\.[0-9]{2}", text).group()
-        logging.debug(f"Parsed date {date_} from text: {text}")
-    except ValueError:
-        logging.error("Could not find date in message")
-        return False
-
-    return date_
-
-
-def write_results(user_id, result_date, value, username=None):
-    """
-    TODO Rework as follows:
-
-        sheet = get_spreadsheet()
-        user_column_index = find_or_add_user()
-        update_daily_result()
-        update_monthly_result()
-    """
-
+def get_spreadsheet():
     gc = gspread.service_account(filename=google_service_account_fname)
     sheet = gc.open_by_url(google_sheet_uri).sheet1
 
-    logging.info(f"Writing value {value} for user {user_id}")
-
-    users_row_index = 1
-
-    users_row = sheet.get_values(f"{users_row_index}:{users_row_index}")[0]
-    logging.debug(users_row)
-
-    if not users_row:
-        logging.error("Data seems to be empty")
-        return False
-
-    try:
-        users_column_index = users_row.index(str(user_id)) + 1
-    except ValueError:
-        logging.warning(f"Could not find user {user_id}, adding new")
-
-        users_column_index = len(users_row) + 1  # A is 1, B is 2, C is 3, ...
-        sheet.update_cell(users_row_index, users_column_index, user_id)
-
-        if username:
-            user_cell = gspread.cell.Cell(users_row_index, users_column_index)
-            sheet.update_note(user_cell.address, username)
-
-    daily_range_start = 16
-    daily_range_end = 382
-
-    daily_row_index = daily_range_start + int(datetime.strptime(result_date, "%d.%m").strftime("%j"))
-
-    sheet.update_cell(daily_row_index, 1, str(result_date))
-    sheet.update_cell(daily_row_index, users_column_index, value)
-
-    daily_range = sheet.get_values(f"{daily_range_start}:{daily_range_end}")
-
-    result_month_humanized = result_date.split(".")[1]
-    result_month = int(result_month_humanized)
-    # fmt: off
-    users_results = [
-        (cell[0], cell[users_column_index - 1])
-        for cell
-        in daily_range
-        if result_month_humanized in cell[0]
-    ]
-    # fmt: on
-
-    # all results array
-    logging.debug(users_results)
-
-    # update monthly sum
-    users_sum = sum([int(entry[1]) for entry in users_results])
-    logging.debug(users_sum)
-    sheet.update_cell(1 + result_month, users_column_index, users_sum)
-
-    return users_sum
+    return sheet
 
 
 @bot.message_handler(commands=["start", "help"])
 def send_welcome(message):
     bot.reply_to(message, "Howdy, how are you doing?")
+
+
+@bot.message_handler(commands=["me"])
+def process_stats_request(message):
+    logging.warning("Processing stats request")
+
+    result_dummy = Result(date_notation=None)
+
+    tg_user = TGUser(id=message.from_user.id, username=message.from_user.username)
+    tg_user_handler = TGUserSpreadsheetHandler(get_spreadsheet(), tg_user)
+
+    monthly_map = tg_user_handler.get_monthly_map(result_dummy.month)
+    monthly_sum = sum(monthly_map.values())
+
+    result_plot = ResultPlot()
+    plot = result_plot.my_stat(monthly_map)
+    fname = result_plot.save(plot, fname=str(message.from_user.id))
+
+    with open(fname, "rb") as fp:
+        bot.send_photo(
+            chat_id=chat_id,
+            photo=fp,
+            caption="{webhook_results_monthly}".format(**i18n.lang_map).format(**{"monthly_sum": monthly_sum}),
+            reply_to_message_id=message.id,
+        )
 
 
 @bot.message_handler(func=filter_results_reply)
@@ -140,29 +83,36 @@ def process_results_reply(message):
 
     logging.debug(message)
 
-    value = parse_results(message.text)
-    result_date = parse_notify(message.reply_to_message.json.get("text"))
+    message_parser = MessageParser()
 
-    if not value:
+    try:
+        value = message_parser.get_value_from_reply(message.text)
+    except ValueError:
         bot.reply_to(message, "{webhook_error_parse_count}".format(**i18n.lang_map))
         return None
 
-    try:
-        monthly_sum = write_results(message.from_user.id, result_date, value, username=message.from_user.username)
-    except gspread.exceptions.APIError as e:
-        monthly_sum = False
-        logging.error(f"Could not write results: {e}")
+    date = message_parser.get_date_from_notify(message.reply_to_message.json.get("text"))
 
-    if not monthly_sum:
+    result = Result(date_notation=date, value=value)
+
+    tg_user = TGUser(id=message.from_user.id, username=message.from_user.username)
+    tg_user_handler = TGUserSpreadsheetHandler(get_spreadsheet(), tg_user)
+
+    tg_user_handler.touch()
+
+    try:
+        tg_user_handler.add_result(result)
+    except gspread.exceptions.APIError as e:
+        logging.error(f"Could not write results: {e}")
         bot.reply_to(message, "{webhook_error_write_results}".format(**i18n.lang_map))
         return None
 
-    monthly_sum_humanized = max(monthly_sum // 1000, 1)
-    monthly_sum_humanized = f"{monthly_sum_humanized},000"
+    monthly_sum = sum(tg_user_handler.get_monthly_map(result.month).values())
+    monthly_sum_human = str(max(monthly_sum // 1000, 1)) + ",000"
 
     bot.reply_to(
         message,
-        "{webhook_results_written}".format(**i18n.lang_map).format(**{"monthly_sum_humanized": monthly_sum_humanized}),
+        "{webhook_results_written}".format(**i18n.lang_map).format(**{"monthly_sum_human": monthly_sum_human}),
     )
 
 

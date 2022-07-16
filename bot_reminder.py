@@ -25,6 +25,9 @@ app_language = os.environ.get("APP_LANG", "en")
 
 i18n = I18n(lang=app_language)
 
+# TODO Refactor as in example
+#   https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/timer_bot.py
+
 
 def send_notify():
     logging.warning("Sending notify")
@@ -35,13 +38,13 @@ def send_notify():
 
     date_notify = date_current + date_one_day_before
 
-    current_date_humanized = date_notify.strftime("%d.%m")
+    current_date_human = date_notify.strftime("%d.%m")
 
     # TODO Use single dynamic data map object for second format()
     notify_text = "{reminder_mark} {reminder_notify}".format(**i18n.lang_map).format(
         **{
             "challenge_tag": challenge_tag,
-            "current_date_humanized": current_date_humanized,
+            "current_date_human": current_date_human,
         }
     )
 

@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
         - name: reminder
-          image: agrrh/tg-step-counter:0.1.7
+          image: agrrh/tg-step-counter:0.1.8
 
           env:
             - name: TZ
@@ -50,6 +50,12 @@ spec:
                 secretKeyRef:
                   name: config
                   key: tg_token
+
+            - name: APP_TG_CHAT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: config
+                  key: tg_chat_id
 
             - name: APP_TG_USERNAME
               value: "step_counter_bot"

@@ -19,11 +19,13 @@ class Internationalization(object):
             fp = open(file_path, "r")
         except Exception as e:
             logging.error(f"Could not load file {file_path}: {e}")
+            return False
 
         try:
-            lang_data = yaml.load(fp)
+            lang_data = yaml.load(fp, Loader=yaml.SafeLoader)
         except Exception as e:
             logging.error(f"Could not parse YAML from {file_path}: {e}")
+            return False
         finally:
             fp.close()
 

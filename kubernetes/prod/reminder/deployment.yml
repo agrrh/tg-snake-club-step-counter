@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
         - name: reminder
-          image: agrrh/tg-step-counter:0.1.4
+          image: agrrh/tg-step-counter:0.1.6
 
           env:
             - name: APP_DEV_MODE

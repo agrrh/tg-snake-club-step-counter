@@ -1,0 +1,15 @@
+---
+
+reminder_mark: ⏰
+reminder_notify: >-
+    To add your {challenge_tag} results for {current_date_humanized}, send steps count in reply to this message.
+
+webhook_error_parse_count: >-
+  Sadly, I can't recognize steps count in your message.
+  Reply to original message, specifying only number.
+
+webhook_error_write_results: >-
+  Sadly, I can't write your results now, please try again later.
+
+webhook_results_written: >-
+  Thanks, your results were written. Total count for this month os around {monthly_sum_humanized} steps.

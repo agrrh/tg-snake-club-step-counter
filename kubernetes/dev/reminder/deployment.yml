@@ -30,11 +30,17 @@ spec:
     spec:
       containers:
         - name: reminder
-          image: agrrh/tg-step-counter:0.1.6
+          image: agrrh/tg-step-counter:0.1.7
 
           env:
+            - name: TZ
+              value: "Europe/Moscow"
+
             - name: APP_DEV_MODE
               value: ""
+
+            - name: APP_LANG
+              value: "ru"
 
             - name: APP_TG_TOKEN
               valueFrom:

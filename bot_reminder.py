@@ -8,6 +8,8 @@ from datetime import date, timedelta
 import schedule
 import telebot
 
+from tg_step_counter.i18n import Internationalization as I18n
+
 
 bot_token = os.environ.get("APP_TG_TOKEN")
 
@@ -19,10 +21,15 @@ challenge_tag = os.environ.get("APP_TG_CHALLENGE_TAG")
 
 notify_time = os.environ.get("APP_TG_NOTIFY_TIME", "10:00")
 
+app_language = os.environ.get("APP_LANG", "en")
+
+i18n = I18n(lang=app_language)
+
 
 def send_notify():
     logging.warning("Sending notify")
 
+    # TODO Date calculations as separate function
     date_current = date.today()
     date_one_day_before = timedelta(days=-1)
 
@@ -30,7 +37,13 @@ def send_notify():
 
     current_date_humanized = date_notify.strftime("%d.%m")
 
-    notify_text = f"⏰ Чтобы внести свои результаты по {challenge_tag} за {current_date_humanized}, отправьте число шагов ответом на это сообщение."  # noqa
+    # TODO Use single dynamic data map object for second format()
+    notify_text = "{reminder_mark} {reminder_notify}".format(**i18n.lang_map).format(
+        **{
+            "challenge_tag": challenge_tag,
+            "current_date_humanized": current_date_humanized,
+        }
+    )
 
     bot.send_message(chat_id, notify_text)
 

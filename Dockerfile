@@ -1,7 +1,5 @@
 FROM python:3-alpine
 
-ENV TZ=Europe/Moscow
-
 WORKDIR /opt/app
 
 COPY requirements.txt ./

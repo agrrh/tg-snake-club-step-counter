@@ -3,7 +3,7 @@ import sys
 import time
 import logging
 
-from datetime import date
+from datetime import date, timedelta
 
 import schedule
 import telebot
@@ -17,13 +17,18 @@ chat_id = os.environ.get("APP_TG_CHAT_ID")
 app_dev_mode = os.environ.get("APP_DEV_MODE")
 challenge_tag = os.environ.get("APP_TG_CHALLENGE_TAG")
 
-notify_time = os.environ.get("APP_TG_NOTIFY_TIME", "21:00")
+notify_time = os.environ.get("APP_TG_NOTIFY_TIME", "10:00")
 
 
 def send_notify():
     logging.warning("Sending notify")
 
-    current_date_humanized = date.today().strftime("%d.%m")
+    date_current = date.today()
+    date_one_day_before = timedelta(days=-1)
+
+    date_notify = date_current + date_one_day_before
+
+    current_date_humanized = date_notify.strftime("%d.%m")
 
     notify_text = f"⏰ Чтобы внести свои результаты по {challenge_tag} за {current_date_humanized}, отправьте число шагов ответом на это сообщение."  # noqa
 

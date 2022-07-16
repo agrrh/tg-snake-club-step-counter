@@ -25,6 +25,9 @@ app_language = os.environ.get("APP_LANG", "en")
 
 i18n = I18n(lang=app_language)
 
+# TODO Refactor as in example
+#   https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/timer_bot.py
+
 
 def send_notify():
     logging.warning("Sending notify")

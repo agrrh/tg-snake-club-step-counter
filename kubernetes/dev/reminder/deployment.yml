@@ -39,6 +39,9 @@ spec:
             - name: APP_DEV_MODE
               value: ""
 
+            - name: APP_LANG
+              value: "en"
+
             - name: APP_TG_TOKEN
               valueFrom:
                 secretKeyRef:

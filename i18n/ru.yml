@@ -14,9 +14,5 @@ webhook_error_write_results: >-
 webhook_results_written: >-
   Спасибо, результаты учтены, ваш общий результат за этот месяц около {monthly_sum_human} шагов.
 
-webhook_results_monthly: |-
-  Ваши результаты за месяц:
-
-  ...
-
-  Итого {monthly_sum} шагов.
+webhook_results_monthly: >-
+  Ваши результаты за месяц составили {monthly_sum} шагов.

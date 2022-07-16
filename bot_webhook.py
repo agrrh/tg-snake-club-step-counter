@@ -1,8 +1,6 @@
 import os
 import logging
 
-from datetime import datetime
-
 import telebot
 import gspread
 
@@ -10,10 +8,12 @@ from tg_step_counter.i18n import Internationalization as I18n
 
 from tg_step_counter.message_parser import MessageParser
 
-from tg_step_counter.models.result import Result
-from tg_step_counter.models.tg_user import TGUser, TGUserSpreadsheetHandler
+from tg_step_counter.objects.result import Result, ResultPlot
+from tg_step_counter.objects.tg_user import TGUser, TGUserSpreadsheetHandler
 
 bot_token = os.environ.get("APP_TG_TOKEN")
+
+chat_id = os.environ.get("APP_TG_CHAT_ID")
 
 google_service_account_fname = os.environ.get("APP_GOOGLE_SA_PATH", "./config/google-service-account.json")
 google_sheet_uri = os.environ.get("APP_GOOGLE_SHEET_URI")
@@ -56,19 +56,27 @@ def send_welcome(message):
 def process_stats_request(message):
     logging.warning("Processing stats request")
 
-    logging.debug(message)
-
-    result_dummy = Result()
+    result_dummy = Result(date_notation=None)
 
     tg_user = TGUser(id=message.from_user.id, username=message.from_user.username)
     tg_user_handler = TGUserSpreadsheetHandler(get_spreadsheet(), tg_user)
 
-    monthly_sum = tg_user_handler.get_monthly_sum(result_dummy.month)
+    monthly_map = tg_user_handler.get_monthly_map(result_dummy.month)
+    monthly_sum = sum(monthly_map.values())
 
-    bot.reply_to(
-        message,
-        "{webhook_results_monthly}".format(**i18n.lang_map).format(**{"monthly_sum": monthly_sum}),
-    )
+    result_plot = ResultPlot()
+    plot = result_plot.my_stat(monthly_map)
+    fname = result_plot.save(plot)
+
+    with open(fname, "rb") as fp:
+        bot.send_photo(
+            chat_id=chat_id,
+            photo=fp,
+            caption="{webhook_results_monthly}".format(**i18n.lang_map).format(
+                **{"monthly_map": monthly_map, "monthly_sum": monthly_sum}
+            ),
+            reply_to_message_id=message.id,
+        )
 
 
 @bot.message_handler(func=filter_results_reply)
@@ -101,7 +109,7 @@ def process_results_reply(message):
         bot.reply_to(message, "{webhook_error_write_results}".format(**i18n.lang_map))
         return None
 
-    monthly_sum = sum([r.value for r in tg_user_handler.get_results() if r.month == result.month])
+    monthly_sum = sum(tg_user_handler.get_monthly_map(result.month).values())
     monthly_sum_human = str(max(monthly_sum // 1000, 1)) + ",000"
 
     bot.reply_to(

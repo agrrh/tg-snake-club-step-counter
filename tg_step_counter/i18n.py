@@ -8,12 +8,12 @@ class Internationalization(object):
     MAPS_PATH = "./i18n"
 
     def __init__(self, lang="en"):
-        self.lang = self.lang
+        self.lang = lang
 
         self.__lang_map_load()
 
     def __lang_map_load(self):
-        file_path = f"{self.MAPS_PATH}/{self.language}.yml"
+        file_path = f"{self.MAPS_PATH}/{self.lang}.yml"
 
         try:
             fp = open(file_path, "r")

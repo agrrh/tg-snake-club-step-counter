@@ -149,7 +149,7 @@ def process_results_reply(message):
 
     try:
         monthly_sum = write_results(message.from_user.id, result_date, value, username=message.from_user.username)
-    except Exception as e:
+    except gspread.exceptions.APIError as e:
         monthly_sum = False
         logging.error(f"Could not write results: {e}")
 
@@ -162,9 +162,7 @@ def process_results_reply(message):
 
     bot.reply_to(
         message,
-        "{webhook_error_write_results}".format(**i18n.lang_map).format(
-            **{"monthly_sum_humanized": monthly_sum_humanized}
-        ),
+        "{webhook_results_written}".format(**i18n.lang_map).format(**{"monthly_sum_humanized": monthly_sum_humanized}),
     )
 
 

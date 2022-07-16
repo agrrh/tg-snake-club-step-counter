@@ -40,7 +40,7 @@ spec:
               value: ""
 
             - name: APP_LANG
-              value: "en"
+              value: "ru"
 
             - name: APP_TG_TOKEN
               valueFrom:

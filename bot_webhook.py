@@ -66,7 +66,7 @@ def process_stats_request(message):
 
     result_plot = ResultPlot()
     plot = result_plot.my_stat(monthly_map)
-    fname = result_plot.save(plot)
+    fname = result_plot.save(plot, fname=str(message.from_user.id))
 
     with open(fname, "rb") as fp:
         bot.send_photo(

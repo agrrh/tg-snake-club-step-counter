@@ -72,9 +72,7 @@ def process_stats_request(message):
         bot.send_photo(
             chat_id=chat_id,
             photo=fp,
-            caption="{webhook_results_monthly}".format(**i18n.lang_map).format(
-                **{"monthly_map": monthly_map, "monthly_sum": monthly_sum}
-            ),
+            caption="{webhook_results_monthly}".format(**i18n.lang_map).format(**{"monthly_sum": monthly_sum}),
             reply_to_message_id=message.id,
         )
 

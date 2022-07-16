@@ -7,6 +7,8 @@ from datetime import datetime
 import telebot
 import gspread
 
+from tg_step_counter.i18n import Internationalization as I18n
+
 bot_token = os.environ.get("APP_TG_TOKEN")
 
 google_service_account_fname = os.environ.get("APP_GOOGLE_SA_PATH", "./config/google-service-account.json")
@@ -15,6 +17,10 @@ google_sheet_uri = os.environ.get("APP_GOOGLE_SHEET_URI")
 bot_username = os.environ.get("APP_TG_USERNAME", "step_counter_dev_bot")
 
 bot = telebot.TeleBot(bot_token, parse_mode="Markdown")
+
+app_language = os.environ.get("APP_LANG", "en")
+
+i18n = I18n(lang=app_language)
 
 
 def filter_results_reply(message):
@@ -138,10 +144,7 @@ def process_results_reply(message):
     result_date = parse_notify(message.reply_to_message.json.get("text"))
 
     if not value:
-        bot.reply_to(
-            message,
-            "К сожалению, не могу найти число в вашем сообщении. Ответьте на исходное сообщение, указав только число шагов.",  # noqa
-        )
+        bot.reply_to(message, "{webhook_error_parse_count}".format(**i18n.lang_map))
         return None
 
     try:
@@ -151,14 +154,17 @@ def process_results_reply(message):
         logging.error("Could not write results")
 
     if not monthly_sum:
-        bot.reply_to(message, "К сожалению, не смог записать результаты, попробуйте позже.")
+        bot.reply_to(message, "{webhook_error_write_results}".format(**i18n.lang_map))
         return None
 
     monthly_sum_humanized = max(monthly_sum // 1000, 1)
+    monthly_sum_humanized = f"{monthly_sum_humanized},000"
 
     bot.reply_to(
         message,
-        f"Спасибо, результаты учтены, ваш общий результат за этот месяц около {monthly_sum_humanized} 000 шагов.",
+        "{webhook_error_write_results}".format(**i18n.lang_map).format(
+            **{"monthly_sum_humanized": monthly_sum_humanized}
+        ),
     )
 
 

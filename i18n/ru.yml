@@ -2,7 +2,7 @@
 
 reminder_mark: ⏰
 reminder_notify: >-
-    Чтобы внести свои результаты по {challenge_tag} за {current_date_humanized}, отправьте число шагов ответом на это сообщение.
+    Чтобы внести свои результаты по {challenge_tag} за {current_date_human}, отправьте число шагов ответом на это сообщение.
 
 webhook_error_parse_count: >-
   К сожалению, не могу найти число в вашем сообщении.

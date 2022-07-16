@@ -16,6 +16,12 @@ run_webhook: build
 publish: build
 	docker tag local/step-counter:dev agrrh/tg-step-counter:$$(git describe --tags --abbrev=0)
 	docker push agrrh/tg-step-counter:$$(git describe --tags --abbrev=0)
+	echo agrrh/tg-step-counter:$$(git describe --tags --abbrev=0)
+
+publish_dev: build
+	docker tag local/step-counter:dev agrrh/tg-step-counter:dev-$$(git rev-parse --short HEAD)
+	docker push agrrh/tg-step-counter:dev-$$(git rev-parse --short HEAD)
+	echo agrrh/tg-step-counter:dev-$$(git rev-parse --short HEAD)
 
 seal:
 	test -f kubernetes/config-dev.secret.yml \

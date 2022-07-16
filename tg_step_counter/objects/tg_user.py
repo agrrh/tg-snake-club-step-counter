@@ -1,7 +1,7 @@
 import logging
 import gspread
 
-from tg_step_counter.models.result import Result
+from tg_step_counter.objects.result import Result
 
 
 class TGUser(object):
@@ -101,13 +101,13 @@ class TGUserSpreadsheetHandler(object):
         self._sheet.update_cell(this_row_index, 1, result.date_human)
         self._sheet.update_cell(this_row_index, self.column_index, result.value)
 
-        self.update_monthly_sum(result.month)
+        self.update_monthly(result.month)
 
-    def get_monthly_sum(self, month) -> int:
-        return sum([r.value for r in self.get_results() if r.month == month])
+    def get_monthly_map(self, month) -> dict:
+        return {r.date_human: r.value for r in self.get_results() if r.month == month}
 
-    def update_monthly_sum(self, month) -> None:
-        monthly_sum = self.get_monthly_sum(month)
+    def update_monthly(self, month) -> None:
+        monthly_sum = sum(self.get_monthly_map(month).values())
 
         # add monthly entry
         self._sheet.update_cell(self.MONTHLY_ROW_START + month, 1, month)

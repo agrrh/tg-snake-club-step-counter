@@ -32,9 +32,7 @@ async def main():
         await nc.publish(f"chat.{chat_id}", data)
 
     logging.warning("Getting updates")
-    bot.polling()
-
-    logging.warning("Continue getting updates ...")
+    await bot.polling()
 
 
 if __name__ == "__main__":

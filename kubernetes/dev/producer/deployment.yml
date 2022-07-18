@@ -1,0 +1,59 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: producer
+  namespace: tg-step-counter-dev
+
+  labels:
+    app: tg-step-counter
+    component: producer
+  annotations:
+      keel.sh/policy: major
+      keel.sh/trigger: poll
+      keel.sh/pollSchedule: "@every 15m"
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tg-step-counter
+      component: producer
+
+  strategy:
+    type: Recreate
+
+  template:
+    metadata:
+      labels:
+        app: tg-step-counter
+        component: producer
+    spec:
+      containers:
+        - name: producer
+          image: agrrh/tg-step-counter:dev-92c5403
+
+          env:
+            - name: TZ
+              value: "Europe/Moscow"
+
+            - name: APP_DEV_MODE
+              value: ""
+
+            - name: APP_NATS_ADDRESS
+              value: "http://nats.default.svc:4222"
+
+            - name: APP_TG_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: config
+                  key: tg_token
+
+          # command: [""]
+          args: ["bot_producer.py"]
+
+          # NOTE It polls, no port required
+          # ports:
+          #   - containerPort: 8000

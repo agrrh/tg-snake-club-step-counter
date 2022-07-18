@@ -2,7 +2,7 @@ import os
 import logging
 
 import asyncio
-import telebot
+from telebot.async_telebot import AsyncTeleBot
 
 import pickle
 
@@ -12,7 +12,7 @@ nats_address = os.environ.get("APP_NATS_ADDRESS", "nats://nats.nats.svc:4222")
 
 bot_token = os.environ.get("APP_TG_TOKEN")
 
-bot = telebot.TeleBot(bot_token, parse_mode="Markdown")
+bot = AsyncTeleBot(bot_token, parse_mode="Markdown")
 
 
 async def main():

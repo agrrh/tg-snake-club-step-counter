@@ -19,19 +19,22 @@ async def main():
     logging.warning(f"Connecting to NATS at {nats_address}")
     nc = await nats.connect(nats_address)
 
-    logging.warning("Getting updates")
-    updates = bot.get_updates(limit=1)
+    @bot.message_handler(func=lambda x: True)
+    def process_update(message):
+        logging.warning(message)
 
-    for update in updates:
-        logging.warning(update)
-
-        chat_id = update.message.chat.id
+        chat_id = message.chat.id
 
         logging.warning(f"Processing message from {chat_id}")
 
-        data = pickle.dumps(update.message)
+        data = pickle.dumps(message.message)
 
         await nc.publish(f"chat.{chat_id}", data)
+
+    logging.warning("Getting updates")
+    bot.polling()
+
+    logging.warning("Continue getting updates ...")
 
 
 if __name__ == "__main__":

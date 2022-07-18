@@ -20,7 +20,7 @@ async def main():
     nc = await nats.connect(nats_address)
 
     @bot.message_handler(func=lambda x: True)
-    def process_update(message):
+    async def process_update(message):
         logging.warning(message)
 
         chat_id = message.chat.id

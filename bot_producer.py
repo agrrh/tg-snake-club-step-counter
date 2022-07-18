@@ -8,7 +8,7 @@ import pickle
 
 import nats
 
-nats_address = os.environ.get("APP_NATS_ADDRESS", "http://nats.nats:4222")
+nats_address = os.environ.get("APP_NATS_ADDRESS", "nats://nats.nats.svc:4222")
 
 bot_token = os.environ.get("APP_TG_TOKEN")
 

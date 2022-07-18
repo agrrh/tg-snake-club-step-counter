@@ -43,7 +43,7 @@ spec:
               value: ""
 
             - name: APP_NATS_ADDRESS
-              value: "http://nats.default.svc:4222"
+              value: "nats://nats.default.svc:4222"
 
             - name: APP_TG_TOKEN
               valueFrom:

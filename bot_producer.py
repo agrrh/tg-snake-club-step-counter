@@ -21,15 +21,11 @@ async def main():
 
     @bot.message_handler(func=lambda x: True)
     async def process_update(message):
-        logging.warning(message)
+        logging.warning(f"Processing message from {message.chat.id}")
 
-        chat_id = message.chat.id
+        data = pickle.dumps(message)
 
-        logging.warning(f"Processing message from {chat_id}")
-
-        data = pickle.dumps(message.message)
-
-        await nc.publish(f"chat.{chat_id}", data)
+        await nc.publish(f"chat.{message.chat.id}", data)
 
     logging.warning("Getting updates")
     await bot.polling()

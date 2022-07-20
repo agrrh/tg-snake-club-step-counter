@@ -8,6 +8,7 @@ import pickle
 import nats
 
 nats_address = os.environ.get("APP_NATS_ADDRESS", "nats://nats.nats.svc:4222")
+nats_subject = os.environ.get("APP_NATS_SUBJECT", "common.>")
 
 
 async def handler(message):
@@ -18,11 +19,11 @@ async def handler(message):
 
 
 async def main():
-    logging.warning(f"Connecting to NATS at {nats_address}")
+    logging.warning(f"Connecting to NATS at: {nats_address}")
     nc = await nats.connect(nats_address)
 
-    logging.warning('Getting updates for subject "common"')
-    sub = await nc.subscribe("common.>")
+    logging.warning(f"Getting updates for subject: {nats_subject}")
+    sub = await nc.subscribe(nats_subject)
 
     try:
         async for message in sub.messages:

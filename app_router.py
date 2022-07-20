@@ -34,10 +34,15 @@ async def main():
         logging.warning(message)
         data = pickle.dumps(message)
 
-        try:
-            command = message.command
-        except AttributeError:
-            command = f"not-a-command-{time.time()}"
+        command = f"not-a-command-{time.time()}"
+
+        message_text = message.get("json", {}).get("text")
+        if message_text.startswith("/"):
+            try:
+                command = message_text.strip("/").split("@").pop(0)
+            except Exception as e:
+                logging.error(f"Could not get command from message text: {message_text}")
+                logging.error(e)
 
         logging.warning(command)
 

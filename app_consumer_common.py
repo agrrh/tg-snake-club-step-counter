@@ -1,21 +1,26 @@
-import os
 import logging
-
-import asyncio
-
+import nats
+import os
 import pickle
 
-import nats
+import asyncio
+from telebot.async_telebot import AsyncTeleBot
+
 
 nats_address = os.environ.get("APP_NATS_ADDRESS", "nats://nats.nats.svc:4222")
 nats_subject = os.environ.get("APP_NATS_SUBJECT", "common.>")
 
+bot_token = os.environ.get("APP_TG_TOKEN")
+bot = AsyncTeleBot(bot_token, parse_mode="Markdown")
+
 
 async def handler(message):
-    logging.warning(f'Received a message on "{message.subject} {message.reply}"')
+    logging.warning(f"Received a message on: {message.subject}")
     data = pickle.loads(message.data)
 
     logging.debug(data)
+
+    await bot.reply_to(data, "Howdy, how are you doing?")
 
 
 async def main():

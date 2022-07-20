@@ -61,4 +61,4 @@ spec:
               value: "#конкурсшаги"
 
           # command: [""]
-          args: ["bot_reminder.py"]
+          args: ["app_reminder.py"]

@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
         - name: router
-          image: agrrh/tg-step-counter:dev-dfaf7d7
+          image: agrrh/tg-step-counter:dev-be7eb56
 
           env:
             - name: TZ
@@ -52,4 +52,4 @@ spec:
                   key: tg_token
 
           # command: [""]
-          args: ["bot_router.py"]
+          args: ["app_router.py"]

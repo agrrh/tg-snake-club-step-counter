@@ -28,9 +28,11 @@ async def main():
     try:
         async for message in sub.messages:
             await handler(message)
-            await sub.unsubscribe()
     except Exception as e:
         logging.error(f"Error during message handling: {e}")
+
+    await sub.unsubscribe()
+    await nc.drain()
 
 
 if __name__ == "__main__":

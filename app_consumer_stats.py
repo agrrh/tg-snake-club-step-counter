@@ -75,6 +75,6 @@ async def main():
 
 
 if __name__ == "__main__":
-    logging.critical("Starting consumer/common")
+    logging.critical("Starting consumer/stats")
 
     asyncio.run(main())

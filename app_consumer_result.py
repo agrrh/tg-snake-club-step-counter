@@ -66,8 +66,6 @@ async def handler(message, sheet):
         "{webhook_results_written}".format(**i18n.lang_map).format(**{"monthly_sum_human": monthly_sum_human}),
     )
 
-    await bot.reply_to(data, i18n.lang_map.help_reply)
-
 
 async def main():
     logging.warning(f"Connecting to NATS at: {nats_address}")

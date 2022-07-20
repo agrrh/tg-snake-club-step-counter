@@ -16,7 +16,7 @@ metadata:
       keel.sh/pollSchedule: "@every 15m"
 
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: tg-step-counter

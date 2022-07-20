@@ -57,6 +57,6 @@ async def main():
 
 
 if __name__ == "__main__":
-    logging.critical("Starting tg-nats producer")
+    logging.critical("Starting router")
 
     asyncio.run(main())

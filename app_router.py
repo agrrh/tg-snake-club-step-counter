@@ -40,7 +40,12 @@ async def main():
         logging.warning(message)
         logging.warning(data)
 
-        subject_prefix = SUBJECT_PREFIXES.get(message.command)
+        try:
+            command = message.command
+        except AttributeError:
+            command = None
+
+        subject_prefix = SUBJECT_PREFIXES.get(command)
 
         await nc.publish(f"{subject_prefix}.{message.chat.id}", data)
 

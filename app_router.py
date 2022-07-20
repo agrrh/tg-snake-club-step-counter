@@ -46,8 +46,10 @@ async def main():
             command = None
 
         subject_prefix = SUBJECT_PREFIXES.get(command)
+        subject = f"{subject_prefix}.{message.chat.id}"
 
-        await nc.publish(f"{subject_prefix}.{message.chat.id}", data)
+        logging.warning(f"Sending message to subject {subject}")
+        await nc.publish(subject, data)
 
     logging.warning("Getting updates")
     await bot.polling()

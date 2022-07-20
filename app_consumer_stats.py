@@ -45,14 +45,12 @@ async def handler(message, sheet):
     fname = result_plot.save(plot, fname=str(data.from_user.id))
 
     with open(fname, "rb") as fp:
-        bot.send_photo(
+        await bot.send_photo(
             chat_id=data.json.get("chat").get("id"),
             photo=fp,
             caption="{webhook_results_monthly}".format(**i18n.lang_map).format(**{"monthly_sum": monthly_sum}),
             reply_to_message_id=data.id,
         )
-
-    await bot.reply_to(data, i18n.lang_map.help_reply)
 
 
 async def main():

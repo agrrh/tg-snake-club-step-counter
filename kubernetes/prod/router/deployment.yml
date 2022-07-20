@@ -52,7 +52,7 @@ spec:
                   key: tg_token
 
             - name: APP_TG_USERNAME
-              value: "step_counter_dev_bot"
+              value: "step_counter_bot"
 
           # command: [""]
           args: ["app_router.py"]

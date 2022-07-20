@@ -1,13 +1,11 @@
-import os
 import logging
+import nats
+import os
+import pickle
 import time
 
 import asyncio
 from telebot.async_telebot import AsyncTeleBot
-
-import pickle
-
-import nats
 
 
 nats_address = os.environ.get("APP_NATS_ADDRESS", "nats://nats.nats.svc:4222")

@@ -18,7 +18,7 @@ bot_token = os.environ.get("APP_TG_TOKEN")
 bot = AsyncTeleBot(bot_token, parse_mode="Markdown")
 
 # fmt: off
-SUBJECT_PREFIXES = defaultdict("null")
+SUBJECT_PREFIXES = defaultdict(lambda: "null")
 SUBJECT_PREFIXES.update({
     "start": "common",
     "help": "common",

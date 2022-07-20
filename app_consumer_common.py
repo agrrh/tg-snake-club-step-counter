@@ -11,9 +11,10 @@ nats_address = os.environ.get("APP_NATS_ADDRESS", "nats://nats.nats.svc:4222")
 
 
 async def handler(message):
+    logging.warning(f'Received a message on "{message.subject} {message.reply}"')
     data = pickle.loads(message)
 
-    logging.warning(f"Received a message on '{message.subject} {message.reply}': {data}")
+    logging.debug(data)
 
 
 async def main():

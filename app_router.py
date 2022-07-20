@@ -52,7 +52,7 @@ async def main():
         await nc.publish(subject, data)
 
     logging.warning("Getting updates")
-    await bot.polling()
+    await bot.infinity_polling(timeout=60)
 
 
 if __name__ == "__main__":

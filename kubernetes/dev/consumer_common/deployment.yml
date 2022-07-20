@@ -9,7 +9,7 @@ metadata:
 
   labels:
     app: tg-step-counter
-    component: common
+    component: consumer-common
   annotations:
       keel.sh/policy: major
       keel.sh/trigger: poll
@@ -20,7 +20,7 @@ spec:
   selector:
     matchLabels:
       app: tg-step-counter
-      component: common
+      component: consumer-common
 
   strategy:
     type: Recreate
@@ -29,7 +29,7 @@ spec:
     metadata:
       labels:
         app: tg-step-counter
-        component: common
+        component: consumer-common
     spec:
       containers:
         - name: common

@@ -11,7 +11,6 @@ from telebot.async_telebot import AsyncTeleBot
 nats_address = os.environ.get("APP_NATS_ADDRESS", "nats://nats.nats.svc:4222")
 
 bot_token = os.environ.get("APP_TG_TOKEN")
-
 bot = AsyncTeleBot(bot_token, parse_mode="Markdown")
 
 # fmt: off

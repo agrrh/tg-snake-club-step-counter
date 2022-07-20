@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
         - name: router
-          image: agrrh/tg-step-counter:dev-be7eb56
+          image: agrrh/tg-step-counter:0.2.0
 
           env:
             - name: TZ

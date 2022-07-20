@@ -6,12 +6,17 @@ import pickle
 import asyncio
 from telebot.async_telebot import AsyncTeleBot
 
+from tg_step_counter.i18n import Internationalization as I18n
+
 
 nats_address = os.environ.get("APP_NATS_ADDRESS", "nats://nats.nats.svc:4222")
 nats_subject = os.environ.get("APP_NATS_SUBJECT", "common.>")
 
 bot_token = os.environ.get("APP_TG_TOKEN")
 bot = AsyncTeleBot(bot_token, parse_mode="Markdown")
+
+app_language = os.environ.get("APP_LANG", "en")
+i18n = I18n(lang=app_language)
 
 
 async def handler(message):
@@ -20,7 +25,7 @@ async def handler(message):
 
     logging.debug(data)
 
-    await bot.reply_to(data, "Howdy, how are you doing?")
+    await bot.reply_to(data, i18n.lang_map.help_reply)
 
 
 async def main():

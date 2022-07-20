@@ -1,5 +1,6 @@
 import os
 import logging
+import time
 
 import asyncio
 from telebot.async_telebot import AsyncTeleBot
@@ -32,13 +33,15 @@ async def main():
     async def process_update(message):
         logging.warning(f"Processing message from {message.chat.id}")
 
-        logging.debug(message)
+        logging.warning(message)
         data = pickle.dumps(message)
 
         try:
             command = message.command
         except AttributeError:
-            command = "not-a-command"
+            command = f"not-a-command-{time.time()}"
+
+        logging.warning(command)
 
         subject_prefix = SUBJECT_PREFIXES.get(command, "null")
         subject = f"{subject_prefix}.{message.chat.id}"

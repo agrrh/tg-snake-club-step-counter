@@ -37,6 +37,9 @@ async def main():
 
         data = pickle.dumps(message)
 
+        logging.warning(message)
+        logging.warning(data)
+
         subject_prefix = SUBJECT_PREFIXES.get(message.command)
 
         await nc.publish(f"{subject_prefix}.{message.chat.id}", data)

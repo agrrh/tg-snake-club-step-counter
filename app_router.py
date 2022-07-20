@@ -35,10 +35,8 @@ async def main():
     async def process_update(message):
         logging.warning(f"Processing message from {message.chat.id}")
 
+        logging.debug(message)
         data = pickle.dumps(message)
-
-        logging.warning(message)
-        logging.warning(data)
 
         try:
             command = message.command

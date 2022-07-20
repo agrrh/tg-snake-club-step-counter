@@ -4,12 +4,12 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: reminder
-  namespace: tg-step-counter-dev
+  name: router
+  namespace: tg-step-counter-prod
 
   labels:
     app: tg-step-counter
-    component: reminder
+    component: router
   annotations:
       keel.sh/policy: major
       keel.sh/trigger: poll
@@ -20,16 +20,19 @@ spec:
   selector:
     matchLabels:
       app: tg-step-counter
-      component: reminder
+      component: router
+
+  strategy:
+    type: Recreate
 
   template:
     metadata:
       labels:
         app: tg-step-counter
-        component: reminder
+        component: router
     spec:
       containers:
-        - name: reminder
+        - name: router
           image: agrrh/tg-step-counter:0.2.0
 
           env:
@@ -39,8 +42,8 @@ spec:
             - name: APP_DEV_MODE
               value: ""
 
-            - name: APP_LANG
-              value: "ru"
+            - name: APP_NATS_ADDRESS
+              value: "nats://nats.tg-step-counter-prod.svc:4222"
 
             - name: APP_TG_TOKEN
               valueFrom:
@@ -48,17 +51,8 @@ spec:
                   name: config
                   key: tg_token
 
-            - name: APP_TG_CHAT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: config
-                  key: tg_chat_id
-
-            - name: APP_TG_NOTIFY_TIME
-              value: "10:00"
-
-            - name: APP_TG_CHALLENGE_TAG
-              value: "#конкурсшаги"
+            - name: APP_TG_USERNAME
+              value: "step_counter_dev_bot"
 
           # command: [""]
-          args: ["bot_reminder.py"]
+          args: ["app_router.py"]

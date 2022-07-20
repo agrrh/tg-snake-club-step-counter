@@ -1,0 +1,83 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: consumer-result
+  namespace: tg-step-counter-prod
+
+  labels:
+    app: tg-step-counter
+    component: consumer-result
+  annotations:
+      keel.sh/policy: patch
+      keel.sh/trigger: poll
+      keel.sh/pollSchedule: "@every 15m"
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tg-step-counter
+      component: consumer-result
+
+  strategy:
+    type: Recreate
+
+  template:
+    metadata:
+      labels:
+        app: tg-step-counter
+        component: consumer-result
+    spec:
+      containers:
+        - name: stats
+          image: agrrh/tg-step-counter:0.2.0
+
+          env:
+            - name: TZ
+              value: "Europe/Moscow"
+
+            - name: APP_DEV_MODE
+              value: ""
+
+            - name: APP_LANG
+              value: "ru"
+
+            - name: APP_NATS_ADDRESS
+              value: "nats://nats.tg-step-counter-prod.svc:4222"
+
+            - name: APP_NATS_SUBJECT
+              value: "result.>"
+
+            - name: APP_TG_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: config
+                  key: tg_token
+
+            - name: APP_GOOGLE_SA_PATH
+              value: ./config/google-service-account.json
+
+            - name: APP_GOOGLE_SHEET_URI
+              valueFrom:
+                secretKeyRef:
+                  name: config
+                  key: google_sheet_uri
+
+          # command: [""]
+          args: ["app_consumer_result.py"]
+
+          volumeMounts:
+            - name: google-sa
+              mountPath: "/opt/app/config"
+              readOnly: true
+
+      volumes:
+        - name: google-sa
+          secret:
+            secretName: config
+            items:
+              - key: google_sheet_sa_credentials
+                path: google-service-account.json

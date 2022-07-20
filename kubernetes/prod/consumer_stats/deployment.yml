@@ -4,12 +4,12 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: webhook
+  name: consumer-stats
   namespace: tg-step-counter-prod
 
   labels:
     app: tg-step-counter
-    component: webhook
+    component: consumer-stats
   annotations:
       keel.sh/policy: patch
       keel.sh/trigger: poll
@@ -20,7 +20,7 @@ spec:
   selector:
     matchLabels:
       app: tg-step-counter
-      component: webhook
+      component: consumer-stats
 
   strategy:
     type: Recreate
@@ -29,11 +29,11 @@ spec:
     metadata:
       labels:
         app: tg-step-counter
-        component: webhook
+        component: consumer-stats
     spec:
       containers:
-        - name: reminder
-          image: agrrh/tg-step-counter:0.1.8
+        - name: stats
+          image: agrrh/tg-step-counter:0.2.0
 
           env:
             - name: TZ
@@ -45,20 +45,17 @@ spec:
             - name: APP_LANG
               value: "ru"
 
+            - name: APP_NATS_ADDRESS
+              value: "nats://nats.tg-step-counter-prod.svc:4222"
+
+            - name: APP_NATS_SUBJECT
+              value: "stats.>"
+
             - name: APP_TG_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: config
                   key: tg_token
-
-            - name: APP_TG_CHAT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: config
-                  key: tg_chat_id
-
-            - name: APP_TG_USERNAME
-              value: "step_counter_bot"
 
             - name: APP_GOOGLE_SA_PATH
               value: ./config/google-service-account.json
@@ -70,11 +67,7 @@ spec:
                   key: google_sheet_uri
 
           # command: [""]
-          args: ["bot_webhook.py"]
-
-          # NOTE It polls, no port required
-          # ports:
-          #   - containerPort: 8000
+          args: ["app_consumer_stats.py"]
 
           volumeMounts:
             - name: google-sa

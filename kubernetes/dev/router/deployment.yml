@@ -4,12 +4,12 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: producer
+  name: router
   namespace: tg-step-counter-dev
 
   labels:
     app: tg-step-counter
-    component: producer
+    component: router
   annotations:
       keel.sh/policy: major
       keel.sh/trigger: poll
@@ -20,7 +20,7 @@ spec:
   selector:
     matchLabels:
       app: tg-step-counter
-      component: producer
+      component: router
 
   strategy:
     type: Recreate
@@ -29,11 +29,11 @@ spec:
     metadata:
       labels:
         app: tg-step-counter
-        component: producer
+        component: router
     spec:
       containers:
-        - name: producer
-          image: agrrh/tg-step-counter:dev-92c5403
+        - name: router
+          image: agrrh/tg-step-counter:dev-dfaf7d7
 
           env:
             - name: TZ
@@ -52,8 +52,4 @@ spec:
                   key: tg_token
 
           # command: [""]
-          args: ["bot_producer.py"]
-
-          # NOTE It polls, no port required
-          # ports:
-          #   - containerPort: 8000
+          args: ["bot_router.py"]

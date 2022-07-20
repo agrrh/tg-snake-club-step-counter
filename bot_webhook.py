@@ -23,7 +23,6 @@ bot_username = os.environ.get("APP_TG_USERNAME", "step_counter_dev_bot")
 bot = telebot.TeleBot(bot_token, parse_mode="Markdown")
 
 app_language = os.environ.get("APP_LANG", "en")
-
 i18n = I18n(lang=app_language)
 
 

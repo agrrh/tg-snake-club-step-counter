@@ -13,7 +13,7 @@ nats_subject = os.environ.get("APP_NATS_SUBJECT", "common.>")
 
 async def handler(message):
     logging.warning(f'Received a message on "{message.subject} {message.reply}"')
-    data = pickle.loads(message)
+    data = pickle.loads(message.data.decode())
 
     logging.debug(data)
 

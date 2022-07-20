@@ -36,7 +36,7 @@ async def main():
 
         command = f"not-a-command-{time.time()}"
 
-        message_text = message.get("json", {}).get("text")
+        message_text = message.json.get("text")
         if message_text.startswith("/"):
             try:
                 command = message_text.strip("/").split("@").pop(0)

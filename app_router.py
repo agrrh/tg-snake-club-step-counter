@@ -8,8 +8,6 @@ import pickle
 
 import nats
 
-from collections import defaultdict
-
 
 nats_address = os.environ.get("APP_NATS_ADDRESS", "nats://nats.nats.svc:4222")
 
@@ -18,12 +16,11 @@ bot_token = os.environ.get("APP_TG_TOKEN")
 bot = AsyncTeleBot(bot_token, parse_mode="Markdown")
 
 # fmt: off
-SUBJECT_PREFIXES = defaultdict(lambda _: "null")
-SUBJECT_PREFIXES.update({
+SUBJECT_PREFIXES = {
     "start": "common",
     "help": "common",
     "me": "stats"
-})
+}
 # fmt: on
 
 
@@ -43,7 +40,7 @@ async def main():
         except AttributeError:
             command = "not-a-command"
 
-        subject_prefix = SUBJECT_PREFIXES.get(command)
+        subject_prefix = SUBJECT_PREFIXES.get(command, "null")
         subject = f"{subject_prefix}.{message.chat.id}"
 
         logging.warning(f"Sending message to subject {subject}")

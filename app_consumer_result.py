@@ -77,11 +77,10 @@ async def main():
     sheet = gc.open_by_url(google_sheet_uri).sheet1
 
     logging.warning(f"Connecting to NATS at: {nats_address}")
-    nc = await nats.connect(nats_address)
-
-    logging.warning(f"Getting updates for subject: {nats_subject}")
-    # sub = await nc.subscribe(nats_subject, cb=handler)
-    await nc.subscribe(nats_subject, cb=handler)
+    async with nats.connect(nats_address) as nc:
+        logging.warning(f"Getting updates for subject: {nats_subject}")
+        # sub = await nc.subscribe(nats_subject, cb=handler)
+        await nc.subscribe(nats_subject, cb=handler)
 
     logging.warning("Moving past subscribe ...")
 

@@ -19,7 +19,6 @@ nats_address = os.environ.get("APP_NATS_ADDRESS", "nats://nats.nats.svc:4222")
 nats_subject = os.environ.get("APP_NATS_SUBJECT", "common.>")
 
 bot_token = os.environ.get("APP_TG_TOKEN")
-bot = AsyncTeleBot(bot_token, parse_mode="Markdown")
 
 google_service_account_fname = os.environ.get("APP_GOOGLE_SA_PATH", "./config/google-service-account.json")
 google_sheet_uri = os.environ.get("APP_GOOGLE_SHEET_URI")
@@ -34,12 +33,14 @@ async def handler(message, sheet):
 
     logging.debug(data)
 
+    logging.warning("Creating bot")
+    bot = AsyncTeleBot(bot_token, parse_mode="Markdown")
     message_parser = MessageParser()
 
     try:
         value = message_parser.get_value_from_reply(data.text)
     except ValueError:
-        await bot.reply_to(message, "{webhook_error_parse_count}".format(**i18n.lang_map))
+        await bot.reply_to(data, "{webhook_error_parse_count}".format(**i18n.lang_map))
         return None
 
     date = message_parser.get_date_from_notify(data.reply_to_message.json.get("text"))
@@ -66,26 +67,29 @@ async def handler(message, sheet):
         "{webhook_results_written}".format(**i18n.lang_map).format(**{"monthly_sum_human": monthly_sum_human}),
     )
 
+    await bot.close_session()
+
 
 async def main():
-    logging.warning(f"Connecting to NATS at: {nats_address}")
-    nc = await nats.connect(nats_address)
-
-    logging.warning(f"Getting updates for subject: {nats_subject}")
-    sub = await nc.subscribe(nats_subject)
-
     logging.warning(f"Getting Google Spreadsheet: {google_sheet_uri}")
     gc = gspread.service_account(filename=google_service_account_fname)
     sheet = gc.open_by_url(google_sheet_uri).sheet1
 
-    try:
-        async for message in sub.messages:
-            await handler(message, sheet)
-    except Exception as e:
-        logging.error(f"Error during message handling: {e}")
+    logging.warning(f"Connecting to NATS at: {nats_address}")
+    async with (await nats.connect(nats_address)) as nc:
+        logging.warning(f"Getting updates for subject: {nats_subject}")
+        sub = await nc.subscribe(nats_subject)
 
-    await sub.unsubscribe()
-    await nc.drain()
+        while True:
+            try:
+                message = await sub.next_msg(timeout=60)
+                await handler(message, sheet)
+            except nats.errors.TimeoutError:
+                pass
+            except Exception as e:
+                logging.error(f"Error during handling message: {e}")
+
+        logging.warning("Moving past subscribe ...")
 
 
 if __name__ == "__main__":

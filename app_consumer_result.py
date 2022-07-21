@@ -29,7 +29,7 @@ i18n = I18n(lang=app_language)
 
 
 async def handler(message):
-    global sheet
+    nonlocal sheet
 
     logging.warning(f"Received a message on: {message.subject}")
     data = pickle.loads(message.data)
@@ -68,11 +68,9 @@ async def handler(message):
         "{webhook_results_written}".format(**i18n.lang_map).format(**{"monthly_sum_human": monthly_sum_human}),
     )
 
-    await bot.session.close()
-
 
 async def main():
-    global sheet
+    nonlocal sheet
 
     logging.warning(f"Getting Google Spreadsheet: {google_sheet_uri}")
     gc = gspread.service_account(filename=google_service_account_fname)
@@ -85,15 +83,6 @@ async def main():
         await nc.subscribe(nats_subject, cb=handler)
 
         logging.warning("Moving past subscribe ...")
-
-    # TODO Unsub on exit
-    # logging.warning("Unsubscribe and drain")
-    # await sub.unsubscribe()
-    # await nc.drain()
-
-    # logging.warning("Sleeping ...")
-    # await asyncio.sleep(15)
-    # logging.warning("Sleep done")
 
 
 if __name__ == "__main__":

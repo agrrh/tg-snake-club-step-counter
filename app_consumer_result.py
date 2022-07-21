@@ -28,7 +28,9 @@ app_language = os.environ.get("APP_LANG", "en")
 i18n = I18n(lang=app_language)
 
 
-async def handler(message, sheet):
+async def handler(message):
+    global sheet
+
     logging.warning(f"Received a message on: {message.subject}")
     data = pickle.loads(message.data)
 
@@ -39,7 +41,7 @@ async def handler(message, sheet):
     try:
         value = message_parser.get_value_from_reply(data.text)
     except ValueError:
-        await bot.reply_to(message, "{webhook_error_parse_count}".format(**i18n.lang_map))
+        await bot.reply_to(data, "{webhook_error_parse_count}".format(**i18n.lang_map))
         return None
 
     date = message_parser.get_date_from_notify(data.reply_to_message.json.get("text"))
@@ -68,24 +70,22 @@ async def handler(message, sheet):
 
 
 async def main():
-    logging.warning(f"Connecting to NATS at: {nats_address}")
-    nc = await nats.connect(nats_address)
-
-    logging.warning(f"Getting updates for subject: {nats_subject}")
-    sub = await nc.subscribe(nats_subject)
+    global sheet
 
     logging.warning(f"Getting Google Spreadsheet: {google_sheet_uri}")
     gc = gspread.service_account(filename=google_service_account_fname)
     sheet = gc.open_by_url(google_sheet_uri).sheet1
 
-    try:
-        async for message in sub.messages:
-            await handler(message, sheet)
-    except Exception as e:
-        logging.error(f"Error during message handling: {e}")
+    logging.warning(f"Connecting to NATS at: {nats_address}")
+    nc = await nats.connect(nats_address)
 
-    await sub.unsubscribe()
-    await nc.drain()
+    logging.warning(f"Getting updates for subject: {nats_subject}")
+    await nc.subscribe(nats_subject, cb=handler)
+    # sub = await nc.subscribe(nats_subject, cb=handler)
+
+    # TODO Unsub on exit
+    # await sub.unsubscribe()
+    # await nc.drain()
 
 
 if __name__ == "__main__":

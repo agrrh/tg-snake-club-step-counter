@@ -55,6 +55,13 @@ class TGUserSpreadsheetHandler(object):
 
         return column_index
 
+    def __get_last_column_index(self) -> int:
+        logging.debug("Getting last column index to add new user")
+
+        users_row = self._sheet.get_values(f"{self.USERS_ROW_INDEX}:{self.USERS_ROW_INDEX}")[0]
+
+        return len(users_row) + 1
+
     @property
     def exists(self) -> bool:
         logging.debug(f"Checking if TG User {self.tg_user.id} entry exists")
@@ -65,8 +72,8 @@ class TGUserSpreadsheetHandler(object):
         logging.info(f"Touching {self.tg_user.id}")
 
         if not self.exists:
+            self.column_index = self.__get_last_column_index()
             self._sheet.update_cell(self.USERS_ROW_INDEX, self.column_index, self.tg_user.id)
-            self.column_index = self.__get_column_index()
 
         if self.tg_user.username:
             user_cell = gspread.cell.Cell(self.USERS_ROW_INDEX, self.column_index)

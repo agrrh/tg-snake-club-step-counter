@@ -80,14 +80,18 @@ async def main():
     nc = await nats.connect(nats_address)
 
     logging.warning(f"Getting updates for subject: {nats_subject}")
-    await nc.subscribe(nats_subject, cb=handler)
-    # sub = await nc.subscribe(nats_subject, cb=handler)
+    sub = await nc.subscribe(nats_subject, cb=handler)
+
+    logging.warning("Moving past subscribe ...")
 
     # TODO Unsub on exit
-    # await sub.unsubscribe()
-    # await nc.drain()
+    logging.warning("Unsubscribe and drain")
+    await sub.unsubscribe()
+    await nc.drain()
 
+    logging.warning("Sleeping ...")
     await asyncio.sleep(15)
+    logging.warning("Sleep done")
 
 
 if __name__ == "__main__":

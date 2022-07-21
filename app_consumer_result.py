@@ -87,10 +87,15 @@ async def main():
     # await sub.unsubscribe()
     # await nc.drain()
 
-    await asyncio.sleep(15)
+    # await asyncio.sleep(15)
 
 
 if __name__ == "__main__":
     logging.critical("Starting consumer/result")
 
-    asyncio.run(main())
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
+    try:
+        loop.run_forever()
+    finally:
+        loop.close()

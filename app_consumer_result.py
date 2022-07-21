@@ -87,6 +87,8 @@ async def main():
     # await sub.unsubscribe()
     # await nc.drain()
 
+    await asyncio.sleep(15)
+
 
 if __name__ == "__main__":
     logging.critical("Starting consumer/result")

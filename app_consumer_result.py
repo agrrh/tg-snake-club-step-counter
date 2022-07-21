@@ -82,8 +82,10 @@ async def main():
 
         while True:
             try:
-                message = await sub.next_msg()
-                handler(message, sheet)
+                message = await sub.next_msg(timeout=60)
+                await handler(message, sheet)
+            except nats.errors.TimeoutError:
+                pass
             except Exception as e:
                 logging.error(f"Error during handling message: {e}")
 

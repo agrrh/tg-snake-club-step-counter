@@ -19,7 +19,6 @@ nats_address = os.environ.get("APP_NATS_ADDRESS", "nats://nats.nats.svc:4222")
 nats_subject = os.environ.get("APP_NATS_SUBJECT", "common.>")
 
 bot_token = os.environ.get("APP_TG_TOKEN")
-bot = AsyncTeleBot(bot_token, parse_mode="Markdown")
 
 google_service_account_fname = os.environ.get("APP_GOOGLE_SA_PATH", "./config/google-service-account.json")
 google_sheet_uri = os.environ.get("APP_GOOGLE_SHEET_URI")
@@ -36,6 +35,8 @@ async def handler(message):
 
     logging.debug(data)
 
+    logging.warning("Creating bot")
+    bot = AsyncTeleBot(bot_token, parse_mode="Markdown")
     message_parser = MessageParser()
 
     try:

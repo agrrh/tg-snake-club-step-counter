@@ -72,8 +72,6 @@ async def handler(message):
 async def main():
     global sheet
 
-    is_done = asyncio.Future()
-
     logging.warning(f"Getting Google Spreadsheet: {google_sheet_uri}")
     gc = gspread.service_account(filename=google_service_account_fname)
     sheet = gc.open_by_url(google_sheet_uri).sheet1
@@ -85,8 +83,6 @@ async def main():
         await nc.subscribe(nats_subject, cb=handler)
 
         logging.warning("Moving past subscribe ...")
-
-    await asyncio.wait_for(is_done, 60.0)
 
     # TODO Unsub on exit
     # logging.warning("Unsubscribe and drain")

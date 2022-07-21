@@ -68,6 +68,8 @@ async def handler(message):
         "{webhook_results_written}".format(**i18n.lang_map).format(**{"monthly_sum_human": monthly_sum_human}),
     )
 
+    await bot.close_session()
+
 
 async def main():
     global sheet

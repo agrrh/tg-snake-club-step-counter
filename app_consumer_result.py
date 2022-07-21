@@ -27,9 +27,7 @@ app_language = os.environ.get("APP_LANG", "en")
 i18n = I18n(lang=app_language)
 
 
-async def handler(message):
-    global sheet
-
+async def handler(message, sheet):
     logging.warning(f"Received a message on: {message.subject}")
     data = pickle.loads(message.data)
 
@@ -73,8 +71,6 @@ async def handler(message):
 
 
 async def main():
-    global sheet
-
     logging.warning(f"Getting Google Spreadsheet: {google_sheet_uri}")
     gc = gspread.service_account(filename=google_service_account_fname)
     sheet = gc.open_by_url(google_sheet_uri).sheet1
@@ -82,8 +78,14 @@ async def main():
     logging.warning(f"Connecting to NATS at: {nats_address}")
     async with (await nats.connect(nats_address)) as nc:
         logging.warning(f"Getting updates for subject: {nats_subject}")
-        # sub = await nc.subscribe(nats_subject, cb=handler)
-        await nc.subscribe(nats_subject, cb=handler)
+        sub = await nc.subscribe(nats_subject)
+
+        while True:
+            try:
+                message = await sub.next_msg()
+                handler(message, sheet)
+            except Exception as e:
+                logging.error(f"Error during handling message: {e}")
 
         logging.warning("Moving past subscribe ...")
 

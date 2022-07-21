@@ -29,7 +29,7 @@ i18n = I18n(lang=app_language)
 
 
 async def handler(message):
-    nonlocal sheet
+    global sheet
 
     logging.warning(f"Received a message on: {message.subject}")
     data = pickle.loads(message.data)
@@ -70,7 +70,7 @@ async def handler(message):
 
 
 async def main():
-    nonlocal sheet
+    global sheet
 
     logging.warning(f"Getting Google Spreadsheet: {google_sheet_uri}")
     gc = gspread.service_account(filename=google_service_account_fname)

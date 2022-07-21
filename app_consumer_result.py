@@ -72,17 +72,21 @@ async def handler(message):
 async def main():
     global sheet
 
+    is_done = asyncio.Future()
+
     logging.warning(f"Getting Google Spreadsheet: {google_sheet_uri}")
     gc = gspread.service_account(filename=google_service_account_fname)
     sheet = gc.open_by_url(google_sheet_uri).sheet1
 
     logging.warning(f"Connecting to NATS at: {nats_address}")
-    async with nats.connect(nats_address) as nc:
+    async with (await nats.connect(nats_address)) as nc:
         logging.warning(f"Getting updates for subject: {nats_subject}")
         # sub = await nc.subscribe(nats_subject, cb=handler)
         await nc.subscribe(nats_subject, cb=handler)
 
-    logging.warning("Moving past subscribe ...")
+        logging.warning("Moving past subscribe ...")
+
+    await asyncio.wait_for(is_done, 60.0)
 
     # TODO Unsub on exit
     # logging.warning("Unsubscribe and drain")

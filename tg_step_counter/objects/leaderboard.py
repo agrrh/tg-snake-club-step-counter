@@ -50,7 +50,7 @@ class LeaderboardPlot(object):
         ax.set(xlim=xlim, xticks=xticks, ylim=ylim, yticks=yticks)
 
         if aliases:
-            plt.bar_label(bar, labels=[aliases.get(k, k) for k in data.keys()])
+            plt.bar_label(bar, labels=[aliases.get(k) or k for k in data.keys()])
 
         fig.tight_layout()
 

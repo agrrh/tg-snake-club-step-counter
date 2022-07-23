@@ -35,23 +35,14 @@ async def handler(message, sheet):
 
     result_dummy = Result(date_notation=None)
 
-    tg_user_dummy = TGUser(id=data.from_user.id, username=data.from_user.username)
-    tg_user_handler = TGUserSpreadsheetHandler(sheet, tg_user_dummy)
+    tg_user = TGUser(id=data.from_user.id, username=data.from_user.username)
+    tg_user_handler = TGUserSpreadsheetHandler(sheet, tg_user)
 
     logging.warning("Form users leaderboard map")
 
-    monthly_sum_by_user = {}
-
-    for tg_user_id in tg_user_handler.get_users_row():
-        logging.warning("call tg_user")
-        tg_user = TGUser(id=tg_user_id)
-        logging.warning("call tg_user_handler")
-        tg_user_handler = TGUserSpreadsheetHandler(sheet, tg_user)
-
-        logging.warning("call monthly_map")
-        monthly_map = tg_user_handler.get_monthly_map(result_dummy.month)
-        logging.warning(f"monthly_map: {monthly_map}")
-        monthly_sum_by_user[tg_user_id] = sum(monthly_map.values())
+    monthly_sum_by_user = {
+        tg_user_id: tg_user_handler.get_monthly(result_dummy.month) for tg_user_id in tg_user_handler.get_users_row()
+    }
 
     logging.warning(f"Resulting map: {monthly_sum_by_user}")
 

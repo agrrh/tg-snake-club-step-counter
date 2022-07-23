@@ -54,7 +54,6 @@ class TGUserSpreadsheetHandler(object):
         try:
             column_index = users_row.index(str(self.tg_user.id)) + 1
         except ValueError:
-            logging.warning(f"Could not find user {self.tg_user.id}, using 0 as column_index")
             return 0
 
         return column_index
@@ -91,7 +90,7 @@ class TGUserSpreadsheetHandler(object):
         for cell in daily_range:
             date_notation = cell[0]
             value = cell[self.column_index - 1]
-            logging.warning(f"date_notation is {date_notation}, value is {value}")
+            logging.debug(f"date_notation is {date_notation}, value is {value}")
 
             if not (date_notation and value):
                 continue
@@ -117,6 +116,11 @@ class TGUserSpreadsheetHandler(object):
 
     def get_monthly_map(self, month) -> dict:
         return {r.date_human: r.value for r in self.get_results() if r.month == month}
+
+    def get_monthly(self, month) -> int:
+        value = self._sheet.get_values(self.MONTHLY_ROW_START + month, self.column_index)
+
+        return int(value)
 
     def update_monthly(self, month) -> None:
         monthly_sum = sum(self.get_monthly_map(month).values())

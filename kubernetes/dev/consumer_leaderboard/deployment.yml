@@ -4,12 +4,12 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: consumer-common
+  name: consumer-leaderboard
   namespace: tg-step-counter-dev
 
   labels:
     app: tg-step-counter
-    component: consumer-common
+    component: consumer-leaderboard
   annotations:
       keel.sh/policy: major
       keel.sh/trigger: poll
@@ -20,7 +20,7 @@ spec:
   selector:
     matchLabels:
       app: tg-step-counter
-      component: consumer-common
+      component: consumer-leaderboard
 
   strategy:
     type: Recreate
@@ -29,10 +29,10 @@ spec:
     metadata:
       labels:
         app: tg-step-counter
-        component: consumer-common
+        component: consumer-leaderboard
     spec:
       containers:
-        - name: common
+        - name: leaderboard
           image: agrrh/tg-step-counter:0.3.0
 
           env:
@@ -49,7 +49,7 @@ spec:
               value: "nats://nats.tg-step-counter-dev.svc:4222"
 
             - name: APP_NATS_SUBJECT
-              value: "common.>"
+              value: "leaderboard.>"
 
             - name: APP_TG_TOKEN
               valueFrom:
@@ -57,5 +57,27 @@ spec:
                   name: config
                   key: tg_token
 
+            - name: APP_GOOGLE_SA_PATH
+              value: ./config/google-service-account.json
+
+            - name: APP_GOOGLE_SHEET_URI
+              valueFrom:
+                secretKeyRef:
+                  name: config
+                  key: google_sheet_uri
+
           # command: [""]
-          args: ["app_consumer_common.py"]
+          args: ["app_consumer_leaderboard.py"]
+
+          volumeMounts:
+            - name: google-sa
+              mountPath: "/opt/app/config"
+              readOnly: true
+
+      volumes:
+        - name: google-sa
+          secret:
+            secretName: config
+            items:
+              - key: google_sheet_sa_credentials
+                path: google-service-account.json

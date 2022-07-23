@@ -41,6 +41,11 @@ class TGUserSpreadsheetHandler(object):
     def get_users_row(self) -> list:
         return self._sheet.get_values(f"{self.USERS_ROW_INDEX}:{self.USERS_ROW_INDEX}")[0]
 
+    def get_user_note(self) -> str:
+        cell = self._sheet.cell(self.USERS_ROW_INDEX, self.column_index)
+
+        return self._sheet.get_note(cell.address)
+
     def __get_column_index(self) -> int:
         """
         Return column index as in spreadsheet.

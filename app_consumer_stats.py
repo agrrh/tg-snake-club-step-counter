@@ -41,7 +41,7 @@ async def handler(message, sheet):
     monthly_sum = sum(monthly_map.values())
 
     result_plot = ResultPlot()
-    plot = result_plot.my_stat(monthly_map)
+    plot = result_plot.generate(monthly_map)
     fname = result_plot.save(plot, fname=str(data.from_user.id))
 
     with open(fname, "rb") as fp:

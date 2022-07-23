@@ -68,7 +68,7 @@ class ResultPlot(object):
 
         return monthly_list
 
-    def my_stat(self, data) -> plt:
+    def generate(self, data) -> plt:
         logging.warning("Generating monthly stats plot")
 
         plt.style.use("_mpl-gallery")

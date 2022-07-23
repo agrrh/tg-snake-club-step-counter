@@ -38,6 +38,9 @@ class TGUserSpreadsheetHandler(object):
         self.tg_user = tg_user
         self.column_index = self.__get_column_index()
 
+    def get_users_row(self) -> list:
+        return self._sheet.get_values(f"{self.USERS_ROW_INDEX}:{self.USERS_ROW_INDEX}")[0]
+
     def __get_column_index(self) -> int:
         """
         Return column index as in spreadsheet.
@@ -46,7 +49,7 @@ class TGUserSpreadsheetHandler(object):
 
         logging.debug(f"Getting column_index for {self.tg_user.id}")
 
-        users_row = self._sheet.get_values(f"{self.USERS_ROW_INDEX}:{self.USERS_ROW_INDEX}")[0]
+        users_row = self.get_users_row()
 
         try:
             column_index = users_row.index(str(self.tg_user.id)) + 1
@@ -58,7 +61,7 @@ class TGUserSpreadsheetHandler(object):
     def __get_last_column_index(self) -> int:
         logging.debug("Getting last column index to add new user")
 
-        users_row = self._sheet.get_values(f"{self.USERS_ROW_INDEX}:{self.USERS_ROW_INDEX}")[0]
+        users_row = self.get_users_row()
 
         return len(users_row) + 1
 

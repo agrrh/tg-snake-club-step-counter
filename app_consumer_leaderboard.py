@@ -41,6 +41,7 @@ async def handler(message, sheet):
     logging.debug("Form users leaderboard map")
 
     monthly_sum_by_user = {}
+    user_aliases = {}
 
     for tg_user_id in tg_user_handler.get_users_row():
         if not tg_user_id.isnumeric():
@@ -50,11 +51,12 @@ async def handler(message, sheet):
         _tg_user_handler = TGUserSpreadsheetHandler(sheet, _tg_user)
 
         monthly_sum_by_user[tg_user_id] = _tg_user_handler.get_monthly(result_dummy.month)
+        user_aliases[tg_user_id] = _tg_user_handler.get_user_note()
 
     logging.debug(f"Resulting map: {monthly_sum_by_user}")
 
     result_plot = LeaderboardPlot()
-    plot = result_plot.generate(monthly_sum_by_user)
+    plot = result_plot.generate(monthly_sum_by_user, user_aliases)
     fname = result_plot.save(plot, fname=str(data.chat.id))
 
     leader_id = max(monthly_sum_by_user, key=monthly_sum_by_user.get)

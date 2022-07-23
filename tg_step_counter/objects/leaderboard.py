@@ -19,7 +19,7 @@ class LeaderboardPlot(object):
 
         return monthly_list
 
-    def generate(self, data) -> plt:
+    def generate(self, data, aliases: dict) -> plt:
         logging.warning("Generating monthly leaderboard plot")
 
         plt.style.use("_mpl-gallery")
@@ -49,7 +49,8 @@ class LeaderboardPlot(object):
         bar = ax.bar(x, y, width=1, edgecolor="white", linewidth=0.7, antialiased=True)
         ax.set(xlim=xlim, xticks=xticks, ylim=ylim, yticks=yticks)
 
-        plt.bar_label(bar, labels=data.keys())
+        if aliases:
+            plt.bar_label(bar, labels=[aliases.get(k, k) for k in data.keys()])
 
         fig.tight_layout()
 

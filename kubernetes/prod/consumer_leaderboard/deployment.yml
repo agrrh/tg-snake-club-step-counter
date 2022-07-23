@@ -4,12 +4,12 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: consumer-result
+  name: consumer-leaderboard
   namespace: tg-step-counter-prod
 
   labels:
     app: tg-step-counter
-    component: consumer-result
+    component: consumer-leaderboard
   annotations:
       keel.sh/policy: patch
       keel.sh/trigger: poll
@@ -20,7 +20,7 @@ spec:
   selector:
     matchLabels:
       app: tg-step-counter
-      component: consumer-result
+      component: consumer-leaderboard
 
   strategy:
     type: Recreate
@@ -29,10 +29,10 @@ spec:
     metadata:
       labels:
         app: tg-step-counter
-        component: consumer-result
+        component: consumer-leaderboard
     spec:
       containers:
-        - name: stats
+        - name: leaderboard
           image: agrrh/tg-step-counter:0.3.0
 
           env:
@@ -49,7 +49,7 @@ spec:
               value: "nats://nats.tg-step-counter-prod.svc:4222"
 
             - name: APP_NATS_SUBJECT
-              value: "result.>"
+              value: "leaderboard.>"
 
             - name: APP_TG_TOKEN
               valueFrom:
@@ -67,7 +67,7 @@ spec:
                   key: google_sheet_uri
 
           # command: [""]
-          args: ["app_consumer_result.py"]
+          args: ["app_consumer_leaderboard.py"]
 
           volumeMounts:
             - name: google-sa

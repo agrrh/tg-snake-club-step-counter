@@ -79,7 +79,7 @@ class TGUserSpreadsheetHandler(object):
             self._sheet.update_cell(self.USERS_ROW_INDEX, self.column_index, self.tg_user.id)
 
         if self.tg_user.username:
-            user_cell = gspread.cell.Cell(self.USERS_ROW_INDEX, self.column_index)
+            user_cell = self._sheet.cell(self.USERS_ROW_INDEX, self.column_index)
             self._sheet.update_note(user_cell.address, self.tg_user.username)
 
     def get_results(self) -> list[Result]:
@@ -118,15 +118,9 @@ class TGUserSpreadsheetHandler(object):
         return {r.date_human: r.value for r in self.get_results() if r.month == month}
 
     def get_monthly(self, month) -> int:
-        cell = gspread.cell.Cell(self.MONTHLY_ROW_START + month, self.column_index)
+        cell = self._sheet.cell(self.MONTHLY_ROW_START + month, self.column_index)
 
-        logging.warning(self.MONTHLY_ROW_START)
-        logging.warning(month)
-        logging.warning(self.column_index)
-        logging.warning(cell)
-        logging.warning(cell.value)
-
-        return int(cell.value)
+        return cell.numeric_value
 
     def update_monthly(self, month) -> None:
         monthly_sum = sum(self.get_monthly_map(month).values())

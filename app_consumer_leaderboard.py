@@ -40,9 +40,16 @@ async def handler(message, sheet):
 
     logging.warning("Form users leaderboard map")
 
-    monthly_sum_by_user = {
-        tg_user_id: tg_user_handler.get_monthly(result_dummy.month) for tg_user_id in tg_user_handler.get_users_row()
-    }
+    monthly_sum_by_user = {}
+
+    for tg_user_id in tg_user_handler.get_users_row():
+        if not tg_user_id.isnumeric():
+            continue
+
+        _tg_user = TGUser(id=tg_user_id)
+        _tg_user_handler = TGUserSpreadsheetHandler(sheet, _tg_user)
+
+        monthly_sum_by_user[tg_user_id] = _tg_user_handler.get_monthly(result_dummy.month)
 
     logging.warning(f"Resulting map: {monthly_sum_by_user}")
 

@@ -47,7 +47,9 @@ async def handler(message, sheet):
 
     result = Result(date_notation=date, value=value)
 
-    tg_user = TGUser(id=data.from_user.id, username=data.from_user.username)
+    user_alias = data.from_user.username or f"{data.from_user.first_name} {data.from_user.last_name}"
+
+    tg_user = TGUser(id=data.from_user.id, alias=user_alias)
     tg_user_handler = TGUserSpreadsheetHandler(sheet, tg_user)
 
     tg_user_handler.touch()

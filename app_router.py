@@ -24,7 +24,8 @@ i18n = I18n(lang=app_language)
 SUBJECT_PREFIXES = {
     "start": "common",
     "help": "common",
-    "me": "stats"
+    "me": "stats",
+    "leaderboard": "leaderboard",
 }
 # fmt: on
 

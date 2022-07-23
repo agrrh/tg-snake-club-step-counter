@@ -9,7 +9,8 @@ from telebot.async_telebot import AsyncTeleBot
 
 from tg_step_counter.i18n import Internationalization as I18n
 
-from tg_step_counter.objects.result import Result, ResultPlot
+from tg_step_counter.objects.result import Result
+from tg_step_counter.objects.leaderboard import LeaderboardPlot
 from tg_step_counter.objects.tg_user import TGUser, TGUserSpreadsheetHandler
 
 
@@ -37,18 +38,41 @@ async def handler(message, sheet):
     tg_user = TGUser(id=data.from_user.id)
     tg_user_handler = TGUserSpreadsheetHandler(sheet, tg_user)
 
-    monthly_map = tg_user_handler.get_monthly_map(result_dummy.month)
-    monthly_sum = sum(monthly_map.values())
+    logging.debug("Form users leaderboard map")
 
-    result_plot = ResultPlot()
-    plot = result_plot.generate(monthly_map)
-    fname = result_plot.save(plot, fname=str(data.from_user.id))
+    monthly_sum_by_user = {}
+    user_aliases = {}
+
+    for tg_user_id in tg_user_handler.get_users_row():
+        if not tg_user_id.isnumeric():
+            continue
+
+        _tg_user = TGUser(id=tg_user_id)
+        _tg_user_handler = TGUserSpreadsheetHandler(sheet, _tg_user)
+
+        monthly_sum_by_user[tg_user_id] = _tg_user_handler.get_monthly(result_dummy.month)
+        user_aliases[tg_user_id] = _tg_user_handler.get_user_note()
+
+    logging.debug(f"Resulting map: {monthly_sum_by_user}")
+
+    result_plot = LeaderboardPlot()
+    plot = result_plot.generate(monthly_sum_by_user, user_aliases)
+    fname = result_plot.save(plot, fname=str(data.chat.id))
+
+    leader_id = max(monthly_sum_by_user, key=monthly_sum_by_user.get)
+    leader_value = max(monthly_sum_by_user.values())
+
+    _tg_user = TGUser(id=leader_id)
+    _tg_user_handler = TGUserSpreadsheetHandler(sheet, _tg_user)
+    leader_alias = _tg_user_handler.get_user_note()
 
     with open(fname, "rb") as fp:
         await bot.send_photo(
             chat_id=data.json.get("chat").get("id"),
             photo=fp,
-            caption="{webhook_results_monthly}".format(**i18n.lang_map).format(**{"monthly_sum": monthly_sum}),
+            caption="{webhook_leaderboard_monthly}".format(**i18n.lang_map).format(
+                **{"leader": leader_alias or leader_id, "leader_value": leader_value}
+            ),
             reply_to_message_id=data.id,
         )
 
@@ -75,6 +99,6 @@ async def main():
 
 
 if __name__ == "__main__":
-    logging.critical("Starting consumer/stats")
+    logging.critical("Starting consumer/leaderboard")
 
     asyncio.run(main())

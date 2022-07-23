@@ -31,14 +31,14 @@ async def handler(message, sheet):
     logging.warning(f"Received a message on: {message.subject}")
     data = pickle.loads(message.data)
 
-    logging.warning(data)
+    logging.debug(data)
 
     result_dummy = Result(date_notation=None)
 
     tg_user = TGUser(id=data.from_user.id, username=data.from_user.username)
     tg_user_handler = TGUserSpreadsheetHandler(sheet, tg_user)
 
-    logging.warning("Form users leaderboard map")
+    logging.debug("Form users leaderboard map")
 
     monthly_sum_by_user = {}
 
@@ -51,7 +51,7 @@ async def handler(message, sheet):
 
         monthly_sum_by_user[tg_user_id] = _tg_user_handler.get_monthly(result_dummy.month)
 
-    logging.warning(f"Resulting map: {monthly_sum_by_user}")
+    logging.debug(f"Resulting map: {monthly_sum_by_user}")
 
     result_plot = LeaderboardPlot()
     plot = result_plot.generate(monthly_sum_by_user)

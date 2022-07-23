@@ -48,6 +48,7 @@ async def handler(message, sheet):
         logging.warning("call tg_user_handler")
         tg_user_handler = TGUserSpreadsheetHandler(sheet, tg_user)
 
+        logging.warning("call monthly_map")
         monthly_map = tg_user_handler.get_monthly_map(result_dummy.month)
         logging.warning(f"monthly_map: {monthly_map}")
         monthly_sum_by_user[tg_user_id] = sum(monthly_map.values())

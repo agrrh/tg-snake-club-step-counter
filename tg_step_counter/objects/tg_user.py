@@ -114,6 +114,8 @@ class TGUserSpreadsheetHandler(object):
         self.update_monthly(result.month)
 
     def get_monthly_map(self, month) -> dict:
+        logging.warning(month)
+        logging.warning(self.get_results())
         return {r.date_human: r.value for r in self.get_results() if r.month == month}
 
     def update_monthly(self, month) -> None:

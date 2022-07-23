@@ -84,6 +84,7 @@ class TGUserSpreadsheetHandler(object):
 
     def get_results(self) -> list[Result]:
         daily_range = self._sheet.get_values(f"{self.DAILY_ROW_START}:{self.DAILY_ROW_END}")
+        logging.warning(daily_range)
 
         results_list = []
 
@@ -114,8 +115,6 @@ class TGUserSpreadsheetHandler(object):
         self.update_monthly(result.month)
 
     def get_monthly_map(self, month) -> dict:
-        logging.warning(month)
-        logging.warning(self.get_results())
         return {r.date_human: r.value for r in self.get_results() if r.month == month}
 
     def update_monthly(self, month) -> None:

@@ -118,9 +118,9 @@ class TGUserSpreadsheetHandler(object):
         return {r.date_human: r.value for r in self.get_results() if r.month == month}
 
     def get_monthly(self, month) -> int:
-        value = self._sheet.get_values(self.MONTHLY_ROW_START + month, self.column_index)
+        cell = gspread.cell.Cell(self.MONTHLY_ROW_START + month, self.column_index)
 
-        return int(value)
+        return int(cell.value)
 
     def update_monthly(self, month) -> None:
         monthly_sum = sum(self.get_monthly_map(month).values())

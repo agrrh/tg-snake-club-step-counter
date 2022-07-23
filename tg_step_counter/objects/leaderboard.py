@@ -46,8 +46,10 @@ class LeaderboardPlot(object):
         ax.set_xlabel("Users")
         ax.set_ylabel("Steps sum")
 
-        ax.bar(x, y, width=1, edgecolor="white", linewidth=0.7, antialiased=True)
+        bar = ax.bar(x, y, width=1, edgecolor="white", linewidth=0.7, antialiased=True)
         ax.set(xlim=xlim, xticks=xticks, ylim=ylim, yticks=yticks)
+
+        plt.bar_label(bar, labels=data.keys())
 
         fig.tight_layout()
 

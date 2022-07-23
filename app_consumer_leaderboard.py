@@ -57,12 +57,15 @@ async def handler(message, sheet):
     plot = result_plot.generate(monthly_sum_by_user)
     fname = result_plot.save(plot, fname=str(data.chat.id))
 
+    leader = max(monthly_sum_by_user, key=monthly_sum_by_user.get)
+    leader_value = max(monthly_sum_by_user.values())
+
     with open(fname, "rb") as fp:
         await bot.send_photo(
             chat_id=data.json.get("chat").get("id"),
             photo=fp,
             caption="{webhook_leaderboard_monthly}".format(**i18n.lang_map).format(
-                **{"monthly_sum_by_user": monthly_sum_by_user}
+                **{"leader": leader, "leader_value": leader_value}
             ),
             reply_to_message_id=data.id,
         )

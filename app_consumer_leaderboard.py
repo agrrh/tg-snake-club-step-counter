@@ -35,7 +35,7 @@ async def handler(message, sheet):
 
     result_dummy = Result(date_notation=None)
 
-    tg_user = TGUser(id=data.from_user.id, username=data.from_user.username)
+    tg_user = TGUser(id=data.from_user.id)
     tg_user_handler = TGUserSpreadsheetHandler(sheet, tg_user)
 
     logging.debug("Form users leaderboard map")

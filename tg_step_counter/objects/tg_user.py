@@ -54,6 +54,7 @@ class TGUserSpreadsheetHandler(object):
         try:
             column_index = users_row.index(str(self.tg_user.id)) + 1
         except ValueError:
+            logging.warning(f"Could not find user {self.tg_user.id}, using 0 as column_index")
             return 0
 
         return column_index
@@ -84,13 +85,13 @@ class TGUserSpreadsheetHandler(object):
 
     def get_results(self) -> list[Result]:
         daily_range = self._sheet.get_values(f"{self.DAILY_ROW_START}:{self.DAILY_ROW_END}")
-        logging.warning(daily_range)
 
         results_list = []
 
         for cell in daily_range:
             date_notation = cell[0]
             value = cell[self.column_index - 1]
+            logging.warning(f"date_notation is {date_notation}, value is {value}")
 
             if not (date_notation and value):
                 continue

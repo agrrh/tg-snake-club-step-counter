@@ -120,6 +120,12 @@ class TGUserSpreadsheetHandler(object):
     def get_monthly(self, month) -> int:
         cell = gspread.cell.Cell(self.MONTHLY_ROW_START + month, self.column_index)
 
+        logging.warning(self.MONTHLY_ROW_START)
+        logging.warning(month)
+        logging.warning(self.column_index)
+        logging.warning(cell)
+        logging.warning(cell.value)
+
         return int(cell.value)
 
     def update_monthly(self, month) -> None:

@@ -70,7 +70,7 @@ async def handler(message, sheet):
         await bot.send_photo(
             chat_id=data.json.get("chat").get("id"),
             photo=fp,
-            caption="{webhook_leaderboard_monthly}".format(**i18n.lang_map).format(
+            caption="{webhook_leaderboard_moment}".format(**i18n.lang_map).format(
                 **{"leader": leader_alias or leader_id, "leader_value": leader_value}
             ),
             reply_to_message_id=data.id,

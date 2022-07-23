@@ -17,6 +17,10 @@ webhook_results_written: >-
 webhook_results_monthly: >-
   Ваши результаты за месяц составили {monthly_sum} шагов.
 
+webhook_leaderboard_moment: |-
+  На данный момент лидирует:
+  ⏫ {leader} 📈 {leader_value} шагов
+
 webhook_leaderboard_monthly: |-
   Лидером за месяц становится пользователь:
   🎉 {leader}

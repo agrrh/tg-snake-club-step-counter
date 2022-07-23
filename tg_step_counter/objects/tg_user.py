@@ -11,15 +11,15 @@ class TGUser(object):
     >>> tg_user = TGUser(id=51)
     >>> tg_user.id
     51
-    >>> tg_user.username is None
+    >>> tg_user.alias is None
     True
     >>> len(tg_user.results)
     0
     """
 
-    def __init__(self, id: int, username: str = None):
+    def __init__(self, id: int, alias: str = None):
         self.id = id
-        self.username = username
+        self.alias = alias
 
         self.results = []
 
@@ -83,9 +83,9 @@ class TGUserSpreadsheetHandler(object):
             self.column_index = self.__get_last_column_index()
             self._sheet.update_cell(self.USERS_ROW_INDEX, self.column_index, self.tg_user.id)
 
-        if self.tg_user.username:
+        if self.tg_user.alias:
             user_cell = self._sheet.cell(self.USERS_ROW_INDEX, self.column_index)
-            self._sheet.update_note(user_cell.address, self.tg_user.username)
+            self._sheet.update_note(user_cell.address, self.tg_user.alias)
 
     def get_results(self) -> list[Result]:
         daily_range = self._sheet.get_values(f"{self.DAILY_ROW_START}:{self.DAILY_ROW_END}")

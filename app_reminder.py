@@ -111,7 +111,7 @@ def send_leaderboards_if_new_month_starts():
 def job():
     logging.warning("Starting job")
 
-    if date.today().strftime("%d") == "01" or app_dev_mode:
+    if date.today().day == 1 or app_dev_mode:
         send_leaderboards_if_new_month_starts()
 
     send_reminder()

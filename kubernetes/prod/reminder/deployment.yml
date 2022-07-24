@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
         - name: reminder
-          image: agrrh/tg-step-counter:0.3.1
+          image: agrrh/tg-step-counter:0.3.2
 
           env:
             - name: TZ

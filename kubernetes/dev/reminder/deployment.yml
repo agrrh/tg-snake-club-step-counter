@@ -28,9 +28,6 @@ spec:
         app: tg-step-counter
         component: reminder
     spec:
-      restartPolicy: Never
-      backoffLimit: 0
-
       containers:
         - name: reminder
           image: agrrh/tg-step-counter:dev-de473e0
@@ -40,7 +37,7 @@ spec:
               value: "Europe/Moscow"
 
             - name: APP_DEV_MODE
-              value: "yes"  # WARNING!
+              value: ""
 
             - name: APP_LANG
               value: "ru"

@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
         - name: reminder
-          image: agrrh/tg-step-counter:0.3.1
+          image: agrrh/tg-step-counter:0.3.2
 
           env:
             - name: TZ
@@ -60,5 +60,27 @@ spec:
             - name: APP_TG_CHALLENGE_TAG
               value: "#конкурсшаги"
 
+            - name: APP_GOOGLE_SA_PATH
+              value: ./config/google-service-account.json
+
+            - name: APP_GOOGLE_SHEET_URI
+              valueFrom:
+                secretKeyRef:
+                  name: config
+                  key: google_sheet_uri
+
           # command: [""]
           args: ["app_reminder.py"]
+
+          volumeMounts:
+            - name: google-sa
+              mountPath: "/opt/app/config"
+              readOnly: true
+
+      volumes:
+        - name: google-sa
+          secret:
+            secretName: config
+            items:
+              - key: google_sheet_sa_credentials
+                path: google-service-account.json

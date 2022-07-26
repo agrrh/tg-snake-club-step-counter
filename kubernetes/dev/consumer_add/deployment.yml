@@ -4,12 +4,12 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: consumer-stats
+  name: consumer-add
   namespace: tg-step-counter-dev
 
   labels:
     app: tg-step-counter
-    component: consumer-stats
+    component: consumer-add
   annotations:
       keel.sh/policy: major
       keel.sh/trigger: poll
@@ -20,7 +20,7 @@ spec:
   selector:
     matchLabels:
       app: tg-step-counter
-      component: consumer-stats
+      component: consumer-add
 
   strategy:
     type: Recreate
@@ -29,7 +29,7 @@ spec:
     metadata:
       labels:
         app: tg-step-counter
-        component: consumer-stats
+        component: consumer-add
     spec:
       containers:
         - name: stats
@@ -49,7 +49,7 @@ spec:
               value: "nats://nats.tg-step-counter-dev.svc:4222"
 
             - name: APP_NATS_SUBJECT
-              value: "stats.>"
+              value: "add.>"
 
             - name: APP_TG_TOKEN
               valueFrom:
@@ -67,7 +67,7 @@ spec:
                   key: google_sheet_uri
 
           # command: [""]
-          args: ["app_consumer_stats.py"]
+          args: ["app_consumer_add.py"]
 
           volumeMounts:
             - name: google-sa

@@ -12,6 +12,7 @@ from tg_step_counter.message_parser import MessageParser
 from tg_step_counter.i18n import Internationalization as I18n
 
 from tg_step_counter.objects.result import Result, ResultPlot
+from tg_step_counter.objects.leaderboard import LeaderboardPlot
 from tg_step_counter.objects.tg_user import TGUser, TGUserSpreadsheetHandler
 
 
@@ -29,6 +30,74 @@ app_language = os.environ.get("APP_LANG", "en")
 i18n = I18n(lang=app_language)
 
 REDIS_TTL = int(os.environ.get("APP_REDIS_TTL", "86400"))
+
+
+async def handler_leaderboard(message, sheet, nats_handler=None):
+    logging.warning(f"Received a message on: {message.subject}")
+    data = pickle.loads(message.data)
+
+    logging.debug(data)
+
+    result_dummy = Result(date_notation=None)
+
+    tg_user = TGUser(id=data.from_user.id)
+    tg_user_handler = TGUserSpreadsheetHandler(sheet, tg_user)
+
+    logging.debug("Form users leaderboard map")
+
+    monthly_sum_by_user = {}
+    user_aliases = {}
+
+    for tg_user_id in tg_user_handler.get_users_row():
+        if not tg_user_id.isnumeric():
+            continue
+
+        _tg_user = TGUser(id=tg_user_id)
+        _tg_user_handler = TGUserSpreadsheetHandler(sheet, _tg_user)
+
+        monthly_sum_by_user[tg_user_id] = _tg_user_handler.get_monthly(result_dummy.month)
+        user_aliases[tg_user_id] = _tg_user_handler.get_user_note()
+
+    logging.debug(f"Resulting map: {monthly_sum_by_user}")
+
+    result_plot = LeaderboardPlot()
+    plot = result_plot.generate(monthly_sum_by_user, user_aliases)
+    fname = result_plot.save(plot, fname=str(data.chat.id))
+
+    leader_id = max(monthly_sum_by_user, key=monthly_sum_by_user.get)
+    leader_value = max(monthly_sum_by_user.values())
+
+    _tg_user = TGUser(id=leader_id)
+    _tg_user_handler = TGUserSpreadsheetHandler(sheet, _tg_user)
+    leader_alias = _tg_user_handler.get_user_note()
+
+    chat_id = data.json.get("chat").get("id")
+    text = "{webhook_leaderboard_moment}".format(**i18n.lang_map).format(
+        **{"leader": leader_alias or leader_id, "leader_value": leader_value}
+    )
+    reply_to = data.id
+
+    logging.warning(f"Opening file in async way: {fname}")
+    async with aiofiles.open(fname, "rb") as afp:
+        image_data = await afp.read()
+
+    logging.warning("Sending file data to redis")
+    redis_handler.set(fname, image_data)
+    redis_handler.expire(fname, REDIS_TTL)
+
+    message = {
+        "type": "photo",
+        "chat_id": chat_id,
+        "photo": fname,
+        "text": text,
+        "reply_to": reply_to,
+    }
+    data = pickle.dumps(message)
+
+    nats_subject = f"{nats_subject_response}.{chat_id}"
+
+    logging.warning(f"Sending response message to bus: {nats_subject}")
+    await nats_handler.publish(nats_subject, data)
 
 
 async def handler_add(message, sheet, nats_handler=None):
@@ -237,6 +306,8 @@ async def main():
                     await handler_help(message, nats_handler=nc)
                 elif message.subject.startswith("logic.add"):
                     await handler_add(message, sheet, nats_handler=nc)
+                elif message.subject.startswith("logic.leaderboard"):
+                    await handler_leaderboard(message, sheet, nats_handler=nc)
 
             except nats.errors.TimeoutError:
                 pass

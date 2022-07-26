@@ -14,9 +14,6 @@ nats_subject = os.environ.get("APP_NATS_SUBJECT", "response.>")
 bot_token = os.environ.get("APP_TG_TOKEN")
 bot = AsyncTeleBot(bot_token, parse_mode="Markdown")
 
-google_service_account_fname = os.environ.get("APP_GOOGLE_SA_PATH", "./config/google-service-account.json")
-google_sheet_uri = os.environ.get("APP_GOOGLE_SHEET_URI")
-
 
 async def send_message(**kwargs):
     chat_id = kwargs.get("chat_id")
@@ -67,10 +64,6 @@ async def handler(message):
 
 
 async def main():
-    logging.warning(f"Getting Google Spreadsheet: {google_sheet_uri}")
-    gc = gspread.service_account(filename=google_service_account_fname)
-    sheet = gc.open_by_url(google_sheet_uri).sheet1
-
     logging.warning(f"Connecting to NATS at: {nats_address}")
     async with (await nats.connect(nats_address)) as nc:
         logging.warning(f"Getting updates for subject: {nats_subject}")
@@ -79,7 +72,7 @@ async def main():
         while True:
             try:
                 message = await sub.next_msg(timeout=60)
-                await handler(message, sheet)
+                await handler(message)
             except nats.errors.TimeoutError:
                 pass
             except Exception as e:

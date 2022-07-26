@@ -56,9 +56,9 @@ async def handler_stats(message, sheet, nats_handler=None):
 
     reply_to = data.id
 
-    with open(fname, "rb").read() as image_data:
-        key = fname.split("/")[-1]
-        redis_handler.setex(key, REDIS_TTL, image_data)
+    image_data = await open(fname, "rb").read()
+    key = fname.split("/")[-1]
+    redis_handler.setex(key, REDIS_TTL, image_data)
 
     message = {
         "type": "photo",

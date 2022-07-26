@@ -1,9 +1,10 @@
 import gspread
 import logging
+import nats
 import os
+import redis
 import schedule
 import sys
-import telebot
 import time
 
 from datetime import date, timedelta
@@ -14,9 +15,11 @@ from tg_step_counter.objects.result import Result
 from tg_step_counter.objects.leaderboard import LeaderboardPlot
 from tg_step_counter.objects.tg_user import TGUser, TGUserSpreadsheetHandler
 
+
 bot_token = os.environ.get("APP_TG_TOKEN")
 
-bot = telebot.TeleBot(bot_token, parse_mode="Markdown")
+nats_address = os.environ.get("APP_NATS_ADDRESS", "nats://nats.nats.svc:4222")
+nats_subject = os.environ.get("APP_NATS_SUBJECT", "response.>")
 
 chat_id = os.environ.get("APP_TG_CHAT_ID")
 app_dev_mode = os.environ.get("APP_DEV_MODE") or False  # Would be True on non-empty string
@@ -27,11 +30,13 @@ notify_time = os.environ.get("APP_TG_NOTIFY_TIME", "10:00")
 google_service_account_fname = os.environ.get("APP_GOOGLE_SA_PATH", "./config/google-service-account.json")
 google_sheet_uri = os.environ.get("APP_GOOGLE_SHEET_URI")
 
+redis_host = os.environ.get("APP_REDIS_HOST", "redis")
+redis_handler = redis.StrictRedis(host=redis_host)
+
 app_language = os.environ.get("APP_LANG", "en")
 i18n = I18n(lang=app_language)
 
-# TODO Refactor as in example
-#   https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/timer_bot.py
+REDIS_TTL = int(os.environ.get("APP_REDIS_TTL", "86400"))
 
 
 def get_yesterday_notation():
@@ -43,21 +48,26 @@ def get_yesterday_notation():
     return date_notify
 
 
-def send_reminder():
+def send_reminder(nats_handler=None):
     date_human = get_yesterday_notation().strftime("%d.%m")
 
-    # TODO Use single dynamic data map object for second format()
-    notify_text = "{reminder_mark} {reminder_notify}".format(**i18n.lang_map).format(
+    text = "{reminder_mark} {reminder_notify}".format(**i18n.lang_map).format(
         **{
             "challenge_tag": challenge_tag,
             "current_date_human": date_human,
         }
     )
 
-    bot.send_message(chat_id, notify_text)
+    message = {
+        "type": "generic",
+        "chat_id": chat_id,
+        "text": text,
+    }
+
+    await nats_handler.publish(nats_subject, message)
 
 
-def send_leaderboards_if_new_month_starts():
+def send_leaderboards_if_new_month_starts(nats_handler=None):
     logging.warning(f"Getting Google Spreadsheet: {google_sheet_uri}")
     gc = gspread.service_account(filename=google_service_account_fname)
     sheet = gc.open_by_url(google_sheet_uri).sheet1
@@ -97,24 +107,34 @@ def send_leaderboards_if_new_month_starts():
     _tg_user_handler = TGUserSpreadsheetHandler(sheet, _tg_user)
     leader_alias = _tg_user_handler.get_user_note()
 
-    with open(fname, "rb") as fp:
-        bot.send_photo(
-            chat_id=chat_id,
-            photo=fp,
-            caption="{webhook_leaderboard_monthly}".format(**i18n.lang_map).format(
-                **{"leader": leader_alias or leader_id, "leader_value": leader_value}
-            ),
-        )
+    text = "{webhook_leaderboard_monthly}".format(**i18n.lang_map).format(
+        **{"leader": leader_alias or leader_id, "leader_value": leader_value}
+    )
+
+    with open(fname, "rb").read() as image_data:
+        redis_handler.setex(fname, REDIS_TTL, image_data)
+
+    message = {
+        "type": "photo",
+        "chat_id": chat_id,
+        "photo": fname,
+        "text": text,
+    }
+
+    await nats_handler.publish(nats_subject, message)
 
 
 @schedule.repeat(schedule.every().day.at(notify_time))
 def job():
     logging.warning("Starting job")
 
-    if date.today().day == 1 or app_dev_mode:
-        send_leaderboards_if_new_month_starts()
+    logging.warning(f"Connecting to NATS at {nats_address}")
+    nc = await nats.connect(nats_address)
 
-    send_reminder()
+    if date.today().day == 1 or app_dev_mode:
+        send_leaderboards_if_new_month_starts(nats_handler=nc)
+
+    send_reminder(nats_handler=nc)
 
 
 if __name__ == "__main__":

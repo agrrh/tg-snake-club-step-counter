@@ -52,15 +52,16 @@ async def handler_stats(message, sheet, nats_handler=None):
     fname = result_plot.save(plot, fname=str(data.from_user.id))
 
     chat_id = data.json.get("chat").get("id")
-
     text = "{webhook_results_monthly}".format(**i18n.lang_map).format(**{"monthly_sum": monthly_sum})
-
     reply_to = data.id
 
+    logging.warning(f"Opening file in async way: {fname}")
     async with aiofiles.open(fname, "rb") as afp:
         image_data = await afp.read()
 
-    redis_handler.setex(fname, REDIS_TTL, image_data)
+    logging.warning("Sending file data to redis")
+    redis_handler.set(fname, image_data)
+    redis_handler.expire(fname, REDIS_TTL)
 
     message = {
         "type": "photo",
@@ -69,8 +70,10 @@ async def handler_stats(message, sheet, nats_handler=None):
         "text": text,
         "reply_to": reply_to,
     }
+    data = pickle.dumps(message)
 
-    await nats_handler.publish(nats_subject, pickle.dumps(message))
+    logging.warning(f"Sending response message to bus: {nats_subject}")
+    await nats_handler.publish(nats_subject, data)
 
 
 async def main():

@@ -3,6 +3,7 @@ import gspread
 import logging
 import nats
 import os
+import pickle
 import redis
 import schedule
 import sys
@@ -65,7 +66,7 @@ async def send_reminder(nats_handler=None):
         "text": text,
     }
 
-    await nats_handler.publish(nats_subject, message)
+    await nats_handler.publish(nats_subject, pickle.dumps(message))
 
 
 async def send_leaderboards_if_new_month_starts(nats_handler=None):
@@ -124,7 +125,7 @@ async def send_leaderboards_if_new_month_starts(nats_handler=None):
         "text": text,
     }
 
-    await nats_handler.publish(nats_subject, message)
+    await nats_handler.publish(nats_subject, pickle.dumps(message))
 
 
 @schedule.repeat(schedule.every().day.at(notify_time))

@@ -70,7 +70,7 @@ async def handler_stats(message, sheet, nats_handler=None):
         "reply_to": reply_to,
     }
 
-    await nats_handler.publish(nats_subject, message)
+    await nats_handler.publish(nats_subject, pickle.dumps(message))
 
 
 async def main():

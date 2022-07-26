@@ -67,7 +67,7 @@ async def send_reminder(nats_handler=None):
     await nats_handler.publish(nats_subject, message)
 
 
-def send_leaderboards_if_new_month_starts(nats_handler=None):
+async def send_leaderboards_if_new_month_starts(nats_handler=None):
     logging.warning(f"Getting Google Spreadsheet: {google_sheet_uri}")
     gc = gspread.service_account(filename=google_service_account_fname)
     sheet = gc.open_by_url(google_sheet_uri).sheet1

@@ -26,10 +26,41 @@
 
 ## Переход в Production режим
 
-- [ ] Ревизия архитектуры, консультации
-- [ ] Рефакторинг кода
-  - [ ] Внедрение новых подходов, если были определены
+- [x] Ревизия архитектуры, консультации
+- [x] Рефакторинг кода
+  - [x] Внедрение новых подходов, если были определены
   - [ ] Исправления по DRY
+  - [ ] Исправления по интерфейсу к БД
 - [ ] Использование настоящей БД
   - [ ] Выбор и интеграция БД
   - [ ] Скрипт импорта и экспорта для Spredsheet
+
+# Архитектура
+
+```mermaid
+flowchart LR
+  ext-api((External API))
+  bus
+  request
+  response
+  logic
+  database[(database)]
+  images[(images)]
+
+  subgraph group1
+    request
+    response
+  end
+
+  subgraph group2
+    logic
+    recurrent
+  end
+
+  ext-api --- request & response
+  request & response --- bus
+
+  bus --- logic & recurrent
+  recurrent & logic --- database
+  recurrent & logic -.- images
+```

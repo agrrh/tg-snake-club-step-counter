@@ -1,0 +1,40 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: redis
+  namespace: tg-step-counter-prod
+
+  labels:
+    app: tg-step-counter
+    component: redis
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tg-step-counter
+      component: redis
+
+  template:
+    metadata:
+      labels:
+        app: tg-step-counter
+        component: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7.0.4
+
+          ports:
+            - containerPort: 6379
+
+          volumeMounts:
+            - mountPath: /data
+              name: redis-data
+
+      volumes:
+        - name: redis-data
+          emptyDir: {}

@@ -4,12 +4,12 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: consumer-leaderboard
+  name: recurrent
   namespace: tg-step-counter-dev
 
   labels:
     app: tg-step-counter
-    component: consumer-leaderboard
+    component: recurrent
   annotations:
       keel.sh/policy: major
       keel.sh/trigger: poll
@@ -20,20 +20,17 @@ spec:
   selector:
     matchLabels:
       app: tg-step-counter
-      component: consumer-leaderboard
-
-  strategy:
-    type: Recreate
+      component: recurrent
 
   template:
     metadata:
       labels:
         app: tg-step-counter
-        component: consumer-leaderboard
+        component: recurrent
     spec:
       containers:
-        - name: leaderboard
-          image: agrrh/tg-step-counter:0.4.2
+        - name: recurrent
+          image: agrrh/tg-step-counter:0.5.0
 
           env:
             - name: TZ
@@ -45,17 +42,23 @@ spec:
             - name: APP_LANG
               value: "ru"
 
-            - name: APP_NATS_ADDRESS
-              value: "nats://nats.tg-step-counter-dev.svc:4222"
-
-            - name: APP_NATS_SUBJECT
-              value: "leaderboard.>"
-
             - name: APP_TG_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: config
                   key: tg_token
+
+            - name: APP_TG_CHAT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: config
+                  key: tg_chat_id
+
+            - name: APP_TG_NOTIFY_TIME
+              value: "10:00"
+
+            - name: APP_TG_CHALLENGE_TAG
+              value: "#конкурсшаги"
 
             - name: APP_GOOGLE_SA_PATH
               value: ./config/google-service-account.json
@@ -67,7 +70,7 @@ spec:
                   key: google_sheet_uri
 
           # command: [""]
-          args: ["app_consumer_leaderboard.py"]
+          args: ["app_recurrent.py"]
 
           volumeMounts:
             - name: google-sa

@@ -4,12 +4,12 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: router
+  name: response
   namespace: tg-step-counter-dev
 
   labels:
     app: tg-step-counter
-    component: router
+    component: response
   annotations:
       keel.sh/policy: major
       keel.sh/trigger: poll
@@ -20,20 +20,17 @@ spec:
   selector:
     matchLabels:
       app: tg-step-counter
-      component: router
-
-  strategy:
-    type: Recreate
+      component: response
 
   template:
     metadata:
       labels:
         app: tg-step-counter
-        component: router
+        component: response
     spec:
       containers:
-        - name: router
-          image: agrrh/tg-step-counter:0.4.2
+        - name: response
+          image: agrrh/tg-step-counter:0.5.0
 
           env:
             - name: TZ
@@ -45,6 +42,9 @@ spec:
             - name: APP_NATS_ADDRESS
               value: "nats://nats.tg-step-counter-dev.svc:4222"
 
+            - name: APP_NATS_SUBJECT
+              value: "response.>"
+
             - name: APP_TG_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -55,4 +55,4 @@ spec:
               value: "step_counter_dev_bot"
 
           # command: [""]
-          args: ["app_router.py"]
+          args: ["app_response.py"]

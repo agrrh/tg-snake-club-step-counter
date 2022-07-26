@@ -4,12 +4,12 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: consumer-common
+  name: request
   namespace: tg-step-counter-dev
 
   labels:
     app: tg-step-counter
-    component: consumer-common
+    component: request
   annotations:
       keel.sh/policy: major
       keel.sh/trigger: poll
@@ -20,7 +20,7 @@ spec:
   selector:
     matchLabels:
       app: tg-step-counter
-      component: consumer-common
+      component: request
 
   strategy:
     type: Recreate
@@ -29,11 +29,11 @@ spec:
     metadata:
       labels:
         app: tg-step-counter
-        component: consumer-common
+        component: request
     spec:
       containers:
-        - name: common
-          image: agrrh/tg-step-counter:0.4.2
+        - name: request
+          image: agrrh/tg-step-counter:0.5.0
 
           env:
             - name: TZ
@@ -42,14 +42,8 @@ spec:
             - name: APP_DEV_MODE
               value: ""
 
-            - name: APP_LANG
-              value: "ru"
-
             - name: APP_NATS_ADDRESS
               value: "nats://nats.tg-step-counter-dev.svc:4222"
-
-            - name: APP_NATS_SUBJECT
-              value: "common.>"
 
             - name: APP_TG_TOKEN
               valueFrom:
@@ -57,5 +51,8 @@ spec:
                   name: config
                   key: tg_token
 
+            - name: APP_TG_USERNAME
+              value: "step_counter_dev_bot"
+
           # command: [""]
-          args: ["app_consumer_common.py"]
+          args: ["app_request.py"]

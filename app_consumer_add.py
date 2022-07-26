@@ -45,6 +45,10 @@ async def handler(message, sheet):
 
     result = Result(date_notation=date, value=value)
 
+    if result.in_future:
+        await bot.reply_to(data, "{add_future_error}".format(**i18n.lang_map))
+        return None
+
     user_alias = data.from_user.username or f"{data.from_user.first_name} {data.from_user.last_name}"
 
     tg_user = TGUser(id=data.from_user.id, alias=user_alias)

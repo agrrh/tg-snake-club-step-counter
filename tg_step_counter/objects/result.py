@@ -52,6 +52,10 @@ class Result(object):
     def day_number_in_year(self) -> int:
         return int(self.date.strftime("%j"))
 
+    @property
+    def in_future(self) -> int:
+        return self.date > datetime.now()
+
 
 class ResultPlot(object):
     def __init__(self, save_dir="/tmp"):

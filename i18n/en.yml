@@ -15,6 +15,9 @@ add_parse_error: |-
 
   First is for current date, second for specific date.
 
+add_future_error: >-
+  Sadly, I can't add results to the future.
+
 webhook_error_parse_count: >-
   Sadly, I can't recognize steps count in your message.
   Reply to original message, specifying only number.

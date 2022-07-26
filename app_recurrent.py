@@ -65,8 +65,10 @@ async def send_reminder(nats_handler=None):
         "chat_id": chat_id,
         "text": text,
     }
+    data = pickle.dumps(message)
 
-    await nats_handler.publish(nats_subject, pickle.dumps(message))
+    logging.warning(f"Sending response message to bus: {nats_subject}")
+    await nats_handler.publish(nats_subject, data)
 
 
 async def send_leaderboards_if_new_month_starts(nats_handler=None):
@@ -113,10 +115,13 @@ async def send_leaderboards_if_new_month_starts(nats_handler=None):
         **{"leader": leader_alias or leader_id, "leader_value": leader_value}
     )
 
+    logging.warning(f"Opening file in async way: {fname}")
     async with aiofiles.open(fname, "rb") as afp:
         image_data = await afp.read()
 
-    redis_handler.setex(fname, REDIS_TTL, image_data)
+    logging.warning("Sending file data to redis")
+    redis_handler.set(fname, image_data)
+    redis_handler.expire(fname, REDIS_TTL)
 
     message = {
         "type": "photo",
@@ -124,8 +129,10 @@ async def send_leaderboards_if_new_month_starts(nats_handler=None):
         "photo": fname,
         "text": text,
     }
+    data = pickle.dumps(message)
 
-    await nats_handler.publish(nats_subject, pickle.dumps(message))
+    logging.warning(f"Sending response message to bus: {nats_subject}")
+    await nats_handler.publish(nats_subject, data)
 
 
 @schedule.repeat(schedule.every().day.at(notify_time))

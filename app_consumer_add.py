@@ -45,10 +45,6 @@ async def handler(message, sheet):
 
     result = Result(date_notation=date, value=value)
 
-    logging.warning(result)
-    logging.warning(result.__dict__)
-    logging.warning(result.in_future)
-
     if result.in_future:
         await bot.reply_to(data, "{add_future_error}".format(**i18n.lang_map))
         return None

@@ -75,7 +75,7 @@ async def main():
                 command = message_text.strip("/").split(" ").pop(0).split("@").pop(0)
             except Exception as e:
                 logging.error(f"Could not get command from message text: {message_text}")
-                logging.error(e)
+                logging.exception(e)
 
         logging.warning(command)
 

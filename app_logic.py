@@ -91,7 +91,7 @@ async def main():
             except nats.errors.TimeoutError:
                 pass
             except Exception as e:
-                logging.error(f"Error during handling message: {e}")
+                logging.error("Error during handling message")
                 logging.exception(e)
 
         logging.warning("Moving past subscribe ...")

@@ -112,8 +112,10 @@ async def send_leaderboards_if_new_month_starts(nats_handler=None):
         **{"leader": leader_alias or leader_id, "leader_value": leader_value}
     )
 
-    async with aiofiles.open(fname, "rb").read() as image_data:
-        redis_handler.setex(fname, REDIS_TTL, image_data)
+    async with aiofiles.open(fname, "rb") as afp:
+        image_data = await afp.read()
+
+    redis_handler.setex(fname, REDIS_TTL, image_data)
 
     message = {
         "type": "photo",

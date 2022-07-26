@@ -57,8 +57,10 @@ async def handler_stats(message, sheet, nats_handler=None):
 
     reply_to = data.id
 
-    async with aiofiles.open(fname, "rb").read() as image_data:
-        redis_handler.setex(fname, REDIS_TTL, image_data)
+    async with aiofiles.open(fname, "rb") as afp:
+        image_data = await afp.read()
+
+    redis_handler.setex(fname, REDIS_TTL, image_data)
 
     message = {
         "type": "photo",

@@ -42,10 +42,10 @@ async def send_photo(**kwargs):
     logging.warning(f"Getting file data from redis: {photo}")
     image_data = redis_handler.get(photo)
 
-    with aiofiles.open(photo, "wb") as fp:
-        fp.write(image_data)
+    async with aiofiles.open(photo, "wb") as fp:
+        await fp.write(image_data)
 
-    fp = aiofiles.open(photo, "rb")
+    fp = await aiofiles.open(photo, "rb")
 
     logging.warning(f"Sending photo message to {chat_id}")
     await bot.send_photo(

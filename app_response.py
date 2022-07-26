@@ -42,16 +42,18 @@ async def send_photo(**kwargs):
     logging.warning(f"Getting file data from redis: {photo}")
     image_data = redis_handler.get(photo)
 
-    async with aiofiles.tempfile.TemporaryFile("wb") as fp:
-        await fp.write(image_data)
+    with aiofiles.open(photo, "wb") as fp:
+        fp.write(image_data)
 
-        logging.warning(f"Sending photo message to {chat_id}")
-        await bot.send_photo(
-            chat_id=chat_id,
-            photo=fp,
-            caption=caption,
-            reply_to_message_id=reply_to,
-        )
+    fp = aiofiles.open(photo, "rb")
+
+    logging.warning(f"Sending photo message to {chat_id}")
+    await bot.send_photo(
+        chat_id=chat_id,
+        photo=fp,
+        caption=caption,
+        reply_to_message_id=reply_to,
+    )
 
 
 HANDLERS = {
@@ -78,7 +80,7 @@ async def main():
     logging.warning(f"Connecting to NATS at: {nats_address}")
     async with (await nats.connect(nats_address)) as nc:
         logging.warning(f"Getting updates for subject: {nats_subject}")
-        sub = await nc.subscribe(nats_subject)
+        sub = await nc.subscribe(nats_subject, "workers")
 
         while True:
             try:

@@ -31,6 +31,66 @@ i18n = I18n(lang=app_language)
 REDIS_TTL = int(os.environ.get("APP_REDIS_TTL", "86400"))
 
 
+async def handler_add(message, sheet, nats_handler=None):
+    logging.warning(f"Received a message on: {message.subject}")
+    data = pickle.loads(message.data)
+
+    logging.debug(data)
+
+    chat_id = data.json.get("chat").get("id")
+    nats_subject = f"{nats_subject_response}.{chat_id}"
+
+    message = {
+        "type": "reply",
+        "message": data,
+        "text": None,
+    }
+
+    message_parser = MessageParser()
+
+    try:
+        value, date = message_parser.parse_add_message(data.text)
+    except ValueError:
+        message["text"] = "{add_parse_error}".format(**i18n.lang_map)
+        data = pickle.dumps(message)
+        await nats_handler.publish(nats_subject, data)
+        return None
+
+    result = Result(date_notation=date, value=value)
+
+    if result.in_future:
+        message["text"] = "{add_future_error}".format(**i18n.lang_map)
+        data = pickle.dumps(message)
+        await nats_handler.publish(nats_subject, data)
+        return None
+
+    user_alias = data.from_user.username or f"{data.from_user.first_name} {data.from_user.last_name}"
+
+    tg_user = TGUser(id=data.from_user.id, alias=user_alias)
+    tg_user_handler = TGUserSpreadsheetHandler(sheet, tg_user)
+
+    tg_user_handler.touch()
+
+    try:
+        tg_user_handler.add_result(result)
+    except gspread.exceptions.APIError as e:
+        logging.error("Could not write results")
+        logging.exception(e)
+        message["text"] = "{webhook_error_write_results}".format(**i18n.lang_map)
+        data = pickle.dumps(message)
+        await nats_handler.publish(nats_subject, data)
+        return None
+
+    monthly_sum = sum(tg_user_handler.get_monthly_map(result.month).values())
+    monthly_sum_human = str(max(monthly_sum // 1000, 1)) + ",000"
+
+    message["text"] = "{webhook_results_written}".format(**i18n.lang_map).format(
+        **{"monthly_sum_human": monthly_sum_human}
+    )
+    data = pickle.dumps(message)
+    await nats_handler.publish(nats_subject, data)
+
+
 async def handler_help(message, nats_handler=None):
     logging.warning(f"Received a message on: {message.subject}")
     data = pickle.loads(message.data)
@@ -175,6 +235,8 @@ async def main():
                     await handler_result(message, sheet, nats_handler=nc)
                 elif message.subject.startswith("logic.help"):
                     await handler_help(message, nats_handler=nc)
+                elif message.subject.startswith("logic.add"):
+                    await handler_add(message, sheet, nats_handler=nc)
 
             except nats.errors.TimeoutError:
                 pass

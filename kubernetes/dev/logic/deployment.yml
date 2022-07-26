@@ -1,0 +1,83 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: logic
+  namespace: tg-step-counter-dev
+
+  labels:
+    app: tg-step-counter
+    component: logic
+  annotations:
+      keel.sh/policy: major
+      keel.sh/trigger: poll
+      keel.sh/pollSchedule: "@every 15m"
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tg-step-counter
+      component: logic
+
+  strategy:
+    type: Recreate
+
+  template:
+    metadata:
+      labels:
+        app: tg-step-counter
+        component: logic
+    spec:
+      containers:
+        - name: stats
+          image: agrrh/tg-step-counter:0.4.2
+
+          env:
+            - name: TZ
+              value: "Europe/Moscow"
+
+            - name: APP_DEV_MODE
+              value: ""
+
+            - name: APP_LANG
+              value: "ru"
+
+            - name: APP_NATS_ADDRESS
+              value: "nats://nats.tg-step-counter-dev.svc:4222"
+
+            - name: APP_NATS_SUBJECTS
+              value: "add,common,result,stats,leaderboard"
+
+            - name: APP_TG_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: config
+                  key: tg_token
+
+            - name: APP_GOOGLE_SA_PATH
+              value: ./config/google-service-account.json
+
+            - name: APP_GOOGLE_SHEET_URI
+              valueFrom:
+                secretKeyRef:
+                  name: config
+                  key: google_sheet_uri
+
+          # command: [""]
+          args: ["app_logic.py"]
+
+          volumeMounts:
+            - name: google-sa
+              mountPath: "/opt/app/config"
+              readOnly: true
+
+      volumes:
+        - name: google-sa
+          secret:
+            secretName: config
+            items:
+              - key: google_sheet_sa_credentials
+                path: google-service-account.json

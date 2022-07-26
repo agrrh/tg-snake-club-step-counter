@@ -1,11 +1,12 @@
+import aiofiles
+import asyncio
 import gspread
 import logging
 import nats
 import os
-import redis
 import pickle
+import redis
 
-import asyncio
 from telebot.async_telebot import AsyncTeleBot
 
 from tg_step_counter.i18n import Internationalization as I18n
@@ -56,9 +57,8 @@ async def handler_stats(message, sheet, nats_handler=None):
 
     reply_to = data.id
 
-    image_data = await open(fname, "rb").read()
-    key = fname.split("/")[-1]
-    redis_handler.setex(key, REDIS_TTL, image_data)
+    async with aiofiles.open(fname, "rb").read() as image_data:
+        redis_handler.setex(fname, REDIS_TTL, image_data)
 
     message = {
         "type": "photo",

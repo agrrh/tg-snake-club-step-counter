@@ -25,6 +25,7 @@ SUBJECT_PREFIXES = {
     "start": "common",
     "help": "common",
     "me": "stats",
+    "add": "add",
     "leaderboard": "leaderboard",
 }
 # fmt: on

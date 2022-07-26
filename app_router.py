@@ -25,6 +25,7 @@ SUBJECT_PREFIXES = {
     "start": "common",
     "help": "common",
     "me": "stats",
+    "add": "add",
     "leaderboard": "leaderboard",
 }
 # fmt: on
@@ -71,7 +72,7 @@ async def main():
         message_text = message.json.get("text")
         if message_text.startswith("/"):
             try:
-                command = message_text.strip("/").split("@").pop(0)
+                command = message_text.strip("/").split(" ").pop(0).split("@").pop(0)
             except Exception as e:
                 logging.error(f"Could not get command from message text: {message_text}")
                 logging.error(e)

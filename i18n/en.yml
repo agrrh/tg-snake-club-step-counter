@@ -4,6 +4,20 @@ reminder_mark: ⏰
 reminder_notify: >-
     To add your {challenge_tag} results for {current_date_human}, send steps count in reply to this message.
 
+add_parse_error: |-
+  Sadly, I can't recognize steps count or date in your message.
+  Please retry the command in one of following formats:
+
+  ```
+  10000
+  12000 31.12
+  ```
+
+  First is for current date, second for specific date.
+
+add_future_error: >-
+  Sadly, I can't add results to the future.
+
 webhook_error_parse_count: >-
   Sadly, I can't recognize steps count in your message.
   Reply to original message, specifying only number.

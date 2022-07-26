@@ -34,7 +34,12 @@ class Result(object):
         self.value = value
 
     def __parse_date_notation(self, notation: str) -> datetime:
-        return datetime.strptime(notation, "%d.%m")
+        date_parsed = datetime.strptime(notation, "%d.%m")
+
+        if date_parsed.year == 1900:
+            date_parsed = date_parsed.replace(year=datetime.today().year)
+
+        return date_parsed
 
     @property
     def date_human(self) -> str:
@@ -42,15 +47,21 @@ class Result(object):
 
     @property
     def day(self) -> int:
-        return int(self.date.strftime("%d"))
+        return self.day
 
     @property
     def month(self) -> int:
-        return int(self.date.strftime("%m"))
+        return self.date.month
 
     @property
     def day_number_in_year(self) -> int:
         return int(self.date.strftime("%j"))
+
+    @property
+    def in_future(self) -> int:
+        logging.warning(self.date)
+        logging.warning(datetime.now())
+        return self.date > datetime.now()
 
 
 class ResultPlot(object):

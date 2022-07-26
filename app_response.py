@@ -1,4 +1,3 @@
-import gspread
 import logging
 import nats
 import os

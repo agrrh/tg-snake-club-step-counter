@@ -86,10 +86,10 @@ async def main():
         await nc.publish(subject, data)
 
     logging.warning("Getting updates")
-    await bot.infinity_polling(timeout=60)
+    await bot.infinity_polling()
 
 
 if __name__ == "__main__":
-    logging.critical("Starting router")
+    logging.critical("Starting svc/request")
 
     asyncio.run(main())

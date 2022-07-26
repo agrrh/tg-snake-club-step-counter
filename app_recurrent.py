@@ -48,7 +48,7 @@ def get_yesterday_notation():
     return date_notify
 
 
-def send_reminder(nats_handler=None):
+async def send_reminder(nats_handler=None):
     date_human = get_yesterday_notation().strftime("%d.%m")
 
     text = "{reminder_mark} {reminder_notify}".format(**i18n.lang_map).format(
@@ -125,16 +125,16 @@ def send_leaderboards_if_new_month_starts(nats_handler=None):
 
 
 @schedule.repeat(schedule.every().day.at(notify_time))
-def job():
+async def job():
     logging.warning("Starting job")
 
     logging.warning(f"Connecting to NATS at {nats_address}")
     nc = await nats.connect(nats_address)
 
     if date.today().day == 1 or app_dev_mode:
-        send_leaderboards_if_new_month_starts(nats_handler=nc)
+        await send_leaderboards_if_new_month_starts(nats_handler=nc)
 
-    send_reminder(nats_handler=nc)
+    await send_reminder(nats_handler=nc)
 
 
 if __name__ == "__main__":

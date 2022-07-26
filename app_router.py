@@ -52,7 +52,7 @@ async def main():
     async def process_result(message):
         logging.warning(f"Processing message from {message.chat.id}")
 
-        logging.warning(message)
+        logging.debug(message)
         data = pickle.dumps(message)
 
         subject = f"result.{message.chat.id}"
@@ -64,7 +64,7 @@ async def main():
     async def process_everything(message):
         logging.warning(f"Processing message from {message.chat.id}")
 
-        logging.warning(message)
+        logging.debug(message)
         data = pickle.dumps(message)
 
         command = f"not-a-command-{time.time()}"

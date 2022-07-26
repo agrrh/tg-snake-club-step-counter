@@ -27,6 +27,7 @@ SUBJECT_PREFIXES = {
     "me": "logic.stats",
     "add": "logic.add",
     "leaderboard": "logic.leaderboard",
+    "result": "logic.result",
 }
 # fmt: on
 
@@ -55,7 +56,8 @@ async def main():
         logging.debug(message)
         data = pickle.dumps(message)
 
-        subject = f"result.{message.chat.id}"
+        subject_prefix = SUBJECT_PREFIXES.get("result", "null")
+        subject = f"{subject_prefix}.{message.chat.id}"
 
         logging.warning(f"Sending message to subject {subject}")
         await nc.publish(subject, data)

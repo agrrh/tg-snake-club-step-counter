@@ -44,6 +44,7 @@ flowchart LR
   response
   logic
   database[(database)]
+  images[(images)]
 
   subgraph group1
     request
@@ -59,5 +60,6 @@ flowchart LR
   request & response --- bus
 
   bus --- logic & recurrent
-  logic --- database
+  recurrent & logic --- database
+  recurrent & logic -.- images
 ```

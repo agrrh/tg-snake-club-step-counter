@@ -138,7 +138,7 @@ def job():
 
 
 if __name__ == "__main__":
-    logging.critical("Starting reminder")
+    logging.critical("Starting svc/recurrent")
 
     if app_dev_mode:
         logging.warning("Running single dev run")

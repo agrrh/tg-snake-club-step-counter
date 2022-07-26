@@ -4,12 +4,12 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: reminder
+  name: recurrent
   namespace: tg-step-counter-dev
 
   labels:
     app: tg-step-counter
-    component: reminder
+    component: recurrent
   annotations:
       keel.sh/policy: major
       keel.sh/trigger: poll
@@ -20,16 +20,16 @@ spec:
   selector:
     matchLabels:
       app: tg-step-counter
-      component: reminder
+      component: recurrent
 
   template:
     metadata:
       labels:
         app: tg-step-counter
-        component: reminder
+        component: recurrent
     spec:
       containers:
-        - name: reminder
+        - name: recurrent
           image: agrrh/tg-step-counter:0.4.2
 
           env:
@@ -70,7 +70,7 @@ spec:
                   key: google_sheet_uri
 
           # command: [""]
-          args: ["app_reminder.py"]
+          args: ["app_recurrent.py"]
 
           volumeMounts:
             - name: google-sa

@@ -33,6 +33,7 @@ async def send_photo(**kwargs):
     chat_id = kwargs.get("chat_id")
     photo = kwargs.get("photo")
     caption = kwargs.get("text")
+    reply_to = kwargs.get("reply_to")
 
     fp = open(photo, "rb")
 
@@ -40,6 +41,7 @@ async def send_photo(**kwargs):
         chat_id=chat_id,
         photo=fp,
         caption=caption,
+        reply_to_message_id=reply_to,
     )
 
 

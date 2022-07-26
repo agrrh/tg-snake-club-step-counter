@@ -22,9 +22,6 @@ spec:
       app: tg-step-counter
       component: response
 
-  strategy:
-    type: Recreate
-
   template:
     metadata:
       labels:
@@ -33,7 +30,7 @@ spec:
     spec:
       containers:
         - name: response
-          image: agrrh/tg-step-counter:0.4.2
+          image: agrrh/tg-step-counter:0.5.0
 
           env:
             - name: TZ

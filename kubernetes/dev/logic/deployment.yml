@@ -22,9 +22,6 @@ spec:
       app: tg-step-counter
       component: logic
 
-  strategy:
-    type: Recreate
-
   template:
     metadata:
       labels:
@@ -33,7 +30,7 @@ spec:
     spec:
       containers:
         - name: stats
-          image: agrrh/tg-step-counter:dev-d960e4b
+          image: agrrh/tg-step-counter:0.5.0
 
           env:
             - name: TZ
@@ -50,6 +47,9 @@ spec:
 
             - name: APP_NATS_SUBJECT
               value: "logic.>"
+
+            - name: APP_NATS_SUBJECT_RESPONSE
+              value: "response"
 
             - name: APP_TG_TOKEN
               valueFrom:

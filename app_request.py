@@ -22,8 +22,8 @@ i18n = I18n(lang=app_language)
 
 # fmt: off
 SUBJECT_PREFIXES = {
-    "start": "logic.common",
-    "help": "logic.common",
+    "start": "logic.help",
+    "help": "logic.help",
     "me": "logic.stats",
     "add": "logic.add",
     "leaderboard": "logic.leaderboard",

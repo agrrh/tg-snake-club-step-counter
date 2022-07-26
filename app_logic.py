@@ -31,6 +31,27 @@ i18n = I18n(lang=app_language)
 REDIS_TTL = int(os.environ.get("APP_REDIS_TTL", "86400"))
 
 
+async def handler_help(message, nats_handler=None):
+    logging.warning(f"Received a message on: {message.subject}")
+    data = pickle.loads(message.data)
+
+    logging.debug(data)
+
+    chat_id = data.json.get("chat").get("id")
+    nats_subject = f"{nats_subject_response}.{chat_id}"
+
+    message = {
+        "type": "reply",
+        "message": data,
+        "text": i18n.lang_map.help_reply,
+    }
+
+    data = pickle.dumps(message)
+
+    logging.warning(f"Sending response message to bus: {nats_subject}")
+    await nats_handler.publish(nats_subject, data)
+
+
 async def handler_stats(message, sheet, nats_handler=None):
     logging.warning(f"Received a message on: {message.subject}")
     data = pickle.loads(message.data)
@@ -152,6 +173,8 @@ async def main():
                     await handler_stats(message, sheet, nats_handler=nc)
                 elif message.subject.startswith("logic.result"):
                     await handler_result(message, sheet, nats_handler=nc)
+                elif message.subject.startswith("logic.help"):
+                    await handler_help(message, nats_handler=nc)
 
             except nats.errors.TimeoutError:
                 pass

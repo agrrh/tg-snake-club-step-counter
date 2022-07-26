@@ -17,6 +17,7 @@ from tg_step_counter.objects.tg_user import TGUser, TGUserSpreadsheetHandler
 
 nats_address = os.environ.get("APP_NATS_ADDRESS", "nats://nats.nats.svc:4222")
 nats_subject = os.environ.get("APP_NATS_SUBJECT", "logic")
+nats_subject_response = os.environ.get("APP_NATS_SUBJECT_RESPONSE", "response")
 
 bot_token = os.environ.get("APP_TG_TOKEN")
 bot = AsyncTeleBot(bot_token, parse_mode="Markdown")
@@ -73,7 +74,7 @@ async def handler_stats(message, sheet, nats_handler=None):
     data = pickle.dumps(message)
 
     logging.warning(f"Sending response message to bus: {nats_subject}")
-    await nats_handler.publish(nats_subject, data)
+    await nats_handler.publish(nats_subject_response, data)
 
 
 async def main():

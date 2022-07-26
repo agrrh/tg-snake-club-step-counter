@@ -34,12 +34,12 @@ class Result(object):
         self.value = value
 
     def __parse_date_notation(self, notation: str) -> datetime:
-        date = datetime.strptime(notation, "%d.%m")
+        date_parsed = datetime.strptime(notation, "%d.%m")
 
-        if date.year == 1900:
-            date.replace(year=datetime.today().year)
+        if date_parsed.year == 1900:
+            date_parsed = date_parsed.replace(year=datetime.today().year)
 
-        return date
+        return date_parsed
 
     @property
     def date_human(self) -> str:

@@ -7,7 +7,7 @@ import os
 import pickle
 import redis
 
-from telebot.async_telebot import AsyncTeleBot
+from tg_step_counter.message_parser import MessageParser
 
 from tg_step_counter.i18n import Internationalization as I18n
 
@@ -18,9 +18,6 @@ from tg_step_counter.objects.tg_user import TGUser, TGUserSpreadsheetHandler
 nats_address = os.environ.get("APP_NATS_ADDRESS", "nats://nats.nats.svc:4222")
 nats_subject = os.environ.get("APP_NATS_SUBJECT", "logic")
 nats_subject_response = os.environ.get("APP_NATS_SUBJECT_RESPONSE", "response")
-
-bot_token = os.environ.get("APP_TG_TOKEN")
-bot = AsyncTeleBot(bot_token, parse_mode="Markdown")
 
 google_service_account_fname = os.environ.get("APP_GOOGLE_SA_PATH", "./config/google-service-account.json")
 google_sheet_uri = os.environ.get("APP_GOOGLE_SHEET_URI")
@@ -79,6 +76,63 @@ async def handler_stats(message, sheet, nats_handler=None):
     await nats_handler.publish(nats_subject, data)
 
 
+async def handler_result(message, sheet, nats_handler=None):
+    logging.warning(f"Received a message on: {message.subject}")
+    data = pickle.loads(message.data)
+
+    logging.debug(data)
+
+    message_parser = MessageParser()
+
+    chat_id = data.json.get("chat").get("id")
+    nats_subject = f"{nats_subject_response}.{chat_id}"
+
+    message = {
+        "type": "reply",
+        "message": data,
+        "text": None,
+    }
+
+    try:
+        value = message_parser.get_value_from_reply(data.text)
+    except ValueError:
+        message["text"] = "{webhook_error_parse_count}".format(**i18n.lang_map)
+        data = pickle.dumps(message)
+        await nats_handler.publish(nats_subject, data)
+        return None
+
+    date = message_parser.get_date_from_notify(data.reply_to_message.json.get("text"))
+
+    result = Result(date_notation=date, value=value)
+
+    user_alias = data.from_user.username or f"{data.from_user.first_name} {data.from_user.last_name}"
+
+    tg_user = TGUser(id=data.from_user.id, alias=user_alias)
+    tg_user_handler = TGUserSpreadsheetHandler(sheet, tg_user)
+
+    tg_user_handler.touch()
+
+    try:
+        tg_user_handler.add_result(result)
+    except gspread.exceptions.APIError as e:
+        logging.error(f"Could not write results: {e}")
+        message["text"] = "{webhook_error_write_results}".format(**i18n.lang_map)
+        data = pickle.dumps(message)
+        await nats_handler.publish(nats_subject, data)
+        return None
+
+    monthly_sum = sum(tg_user_handler.get_monthly_map(result.month).values())
+    monthly_sum_human = str(max(monthly_sum // 1000, 1)) + ",000"
+
+    message["text"] = "{webhook_results_written}".format(**i18n.lang_map).format(
+        **{"monthly_sum_human": monthly_sum_human}
+    )
+    data = pickle.dumps(message)
+
+    logging.warning(f"Sending response message to bus: {nats_subject}")
+    await nats_handler.publish(nats_subject, data)
+
+
 async def main():
     logging.warning(f"Getting Google Spreadsheet: {google_sheet_uri}")
     gc = gspread.service_account(filename=google_service_account_fname)
@@ -96,6 +150,9 @@ async def main():
 
                 if message.subject.startswith("logic.stats"):
                     await handler_stats(message, sheet, nats_handler=nc)
+                elif message.subject.startswith("logic.result"):
+                    await handler_result(message, sheet, nats_handler=nc)
+
             except nats.errors.TimeoutError:
                 pass
             except Exception as e:

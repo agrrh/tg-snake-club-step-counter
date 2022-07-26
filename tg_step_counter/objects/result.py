@@ -59,8 +59,6 @@ class Result(object):
 
     @property
     def in_future(self) -> int:
-        logging.warning(self.date)
-        logging.warning(datetime.now())
         return self.date > datetime.now()
 
 

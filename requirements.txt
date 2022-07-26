@@ -1,6 +1,6 @@
 PyYAML==6.0
 python-box==6.0.2
-pyTelegramBotAPI==4.6.0
+pyTelegramBotAPI==4.6.0  # bump to evade timeouts while long polling in async mode
 gspread==5.4.0
 schedule==1.1.0
 matplotlib==3.5.2

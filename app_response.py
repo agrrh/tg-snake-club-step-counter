@@ -1,9 +1,11 @@
+import aiofiles
+import asyncio
 import logging
 import nats
 import os
 import pickle
+import redis
 
-import asyncio
 from telebot.async_telebot import AsyncTeleBot
 
 
@@ -12,6 +14,9 @@ nats_subject = os.environ.get("APP_NATS_SUBJECT", "response.>")
 
 bot_token = os.environ.get("APP_TG_TOKEN")
 bot = AsyncTeleBot(bot_token, parse_mode="Markdown")
+
+redis_host = os.environ.get("APP_REDIS_HOST", "redis")
+redis_handler = redis.StrictRedis(host=redis_host)
 
 
 async def send_message(**kwargs):
@@ -34,14 +39,21 @@ async def send_photo(**kwargs):
     caption = kwargs.get("text")
     reply_to = kwargs.get("reply_to")
 
-    fp = open(photo, "rb")
+    logging.warning(f"Getting file data from redis: {photo}")
+    image_data = redis_handler.get(photo)
 
-    return await bot.send_photo(
+    fp = await aiofiles.tempfile.TemporaryFile("wb")
+    await fp.write(image_data)
+
+    logging.warning(f"Sending photo message to {chat_id}")
+    await bot.send_photo(
         chat_id=chat_id,
         photo=fp,
         caption=caption,
         reply_to_message_id=reply_to,
     )
+
+    await fp.close()
 
 
 HANDLERS = {

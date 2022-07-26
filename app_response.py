@@ -42,18 +42,16 @@ async def send_photo(**kwargs):
     logging.warning(f"Getting file data from redis: {photo}")
     image_data = redis_handler.get(photo)
 
-    fp = await aiofiles.tempfile.TemporaryFile("wb")
-    await fp.write(image_data)
+    async with aiofiles.tempfile.TemporaryFile("wb") as fp:
+        await fp.write(image_data)
 
-    logging.warning(f"Sending photo message to {chat_id}")
-    await bot.send_photo(
-        chat_id=chat_id,
-        photo=fp,
-        caption=caption,
-        reply_to_message_id=reply_to,
-    )
-
-    await fp.close()
+        logging.warning(f"Sending photo message to {chat_id}")
+        await bot.send_photo(
+            chat_id=chat_id,
+            photo=fp,
+            caption=caption,
+            reply_to_message_id=reply_to,
+        )
 
 
 HANDLERS = {

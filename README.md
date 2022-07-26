@@ -33,3 +33,31 @@
 - [ ] Использование настоящей БД
   - [ ] Выбор и интеграция БД
   - [ ] Скрипт импорта и экспорта для Spredsheet
+
+# Архитектура
+
+```mermaid
+flowchart LR
+  ext-api((External API))
+  bus
+  request
+  response
+  logic
+  database[(database)]
+
+  subgraph group1
+    request
+    response
+  end
+
+  subgraph group2
+    logic
+    recurrent
+  end
+
+  ext-api --- request & response
+  request & response --- bus
+
+  bus --- logic & recurrent
+  logic --- database
+```

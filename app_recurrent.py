@@ -21,7 +21,7 @@ from tg_step_counter.objects.tg_user import TGUser, TGUserSpreadsheetHandler
 bot_token = os.environ.get("APP_TG_TOKEN")
 
 nats_address = os.environ.get("APP_NATS_ADDRESS", "nats://nats.nats.svc:4222")
-nats_subject = os.environ.get("APP_NATS_SUBJECT", "response.>")
+nats_subject = os.environ.get("APP_NATS_SUBJECT", "response")
 
 chat_id = os.environ.get("APP_TG_CHAT_ID")
 app_dev_mode = os.environ.get("APP_DEV_MODE") or False  # Would be True on non-empty string
@@ -130,6 +130,8 @@ async def send_leaderboards_if_new_month_starts(nats_handler=None):
         "text": text,
     }
     data = pickle.dumps(message)
+
+    nats_subject = f"{nats_subject}.{chat_id}"
 
     logging.warning(f"Sending response message to bus: {nats_subject}")
     await nats_handler.publish(nats_subject, data)

@@ -73,8 +73,10 @@ async def handler_stats(message, sheet, nats_handler=None):
     }
     data = pickle.dumps(message)
 
+    nats_subject = f"{nats_subject_response}.{chat_id}"
+
     logging.warning(f"Sending response message to bus: {nats_subject}")
-    await nats_handler.publish(nats_subject_response, data)
+    await nats_handler.publish(nats_subject, data)
 
 
 async def main():

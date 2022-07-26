@@ -37,7 +37,7 @@ class Result(object):
         date = datetime.strptime(notation, "%d.%m")
 
         if date.year == 1900:
-            date.year = datetime.today().year
+            date.replace(year=datetime.today().year)
 
         return date
 

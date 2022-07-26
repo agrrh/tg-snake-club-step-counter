@@ -47,11 +47,11 @@ class Result(object):
 
     @property
     def day(self) -> int:
-        return int(self.date.strftime("%d"))
+        return self.day
 
     @property
     def month(self) -> int:
-        return int(self.date.strftime("%m"))
+        return self.date.month
 
     @property
     def day_number_in_year(self) -> int:

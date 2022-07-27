@@ -137,7 +137,6 @@ async def send_leaderboards_if_new_month_starts(nats_handler=None):
     await nats_handler.publish(nats_subject_, data)
 
 
-@schedule.repeat(schedule.every().day.at(notify_time))
 async def job():
     logging.warning("Starting job")
 
@@ -160,6 +159,8 @@ if __name__ == "__main__":
         time.sleep(1)
         schedule.run_pending()
         sys.exit()
+
+    schedule.every().day.at(notify_time).do(job)
 
     while True:
         schedule.run_pending()

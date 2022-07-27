@@ -156,13 +156,13 @@ async def main():
 
         schedule.every(1).seconds.do(job)
         time.sleep(1)
-        schedule.run_pending()
+        await schedule.run_pending()
         sys.exit()
 
     schedule.every().day.at(notify_time).do(job)
 
     while True:
-        schedule.run_pending()
+        await schedule.run_pending()
         time.sleep(5)
 
 

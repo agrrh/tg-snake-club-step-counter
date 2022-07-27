@@ -68,8 +68,10 @@ async def send_reminder(nats_handler=None):
     }
     data = pickle.dumps(message)
 
-    logging.warning(f"Sending response message to bus: {nats_subject}")
-    await nats_handler.publish(nats_subject, data)
+    nats_subject_ = f"{nats_subject}.{chat_id}"
+
+    logging.warning(f"Sending response message to bus: {nats_subject_}")
+    await nats_handler.publish(nats_subject_, data)
 
 
 async def send_leaderboards_if_new_month_starts(nats_handler=None):

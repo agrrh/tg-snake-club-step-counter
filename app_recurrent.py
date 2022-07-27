@@ -1,11 +1,12 @@
 import aiofiles
+import aioschedule as schedule
+import asyncio
 import gspread
 import logging
 import nats
 import os
 import pickle
 import redis
-import schedule
 import sys
 import time
 
@@ -67,8 +68,10 @@ async def send_reminder(nats_handler=None):
     }
     data = pickle.dumps(message)
 
-    logging.warning(f"Sending response message to bus: {nats_subject}")
-    await nats_handler.publish(nats_subject, data)
+    nats_subject_ = f"{nats_subject}.{chat_id}"
+
+    logging.warning(f"Sending response message to bus: {nats_subject_}")
+    await nats_handler.publish(nats_subject_, data)
 
 
 async def send_leaderboards_if_new_month_starts(nats_handler=None):
@@ -137,7 +140,6 @@ async def send_leaderboards_if_new_month_starts(nats_handler=None):
     await nats_handler.publish(nats_subject_, data)
 
 
-@schedule.repeat(schedule.every().day.at(notify_time))
 async def job():
     logging.warning("Starting job")
 
@@ -150,17 +152,23 @@ async def job():
     await send_reminder(nats_handler=nc)
 
 
-if __name__ == "__main__":
-    logging.critical("Starting svc/recurrent")
-
+async def main():
     if app_dev_mode:
         logging.warning("Running single dev run")
 
         schedule.every(1).seconds.do(job)
         time.sleep(1)
-        schedule.run_pending()
+        await schedule.run_pending()
         sys.exit()
 
+    schedule.every().day.at(notify_time).do(job)
+
     while True:
-        schedule.run_pending()
+        await schedule.run_pending()
         time.sleep(5)
+
+
+if __name__ == "__main__":
+    logging.critical("Starting svc/recurrent")
+
+    asyncio.run(main())

@@ -23,14 +23,14 @@ async def send_message(**kwargs):
     chat_id = kwargs.get("chat_id")
     text = kwargs.get("text")
 
-    return await bot.send_message(chat_id, text)
+    await bot.send_message(chat_id, text)
 
 
 async def send_reply(**kwargs):
     message = kwargs.get("message")
     text = kwargs.get("text")
 
-    return await bot.reply_to(message, text)
+    await bot.reply_to(message, text)
 
 
 async def send_photo(**kwargs):
@@ -73,6 +73,7 @@ async def handler(message):
 
     message_handler = HANDLERS.get(message_type)
 
+    logging.warning("Handling response event")
     await message_handler(**data)
 
 

@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
         - name: recurrent
-          image: agrrh/tg-step-counter:0.5.0
+          image: agrrh/tg-step-counter:0.5.1
 
           env:
             - name: TZ
@@ -41,6 +41,9 @@ spec:
 
             - name: APP_LANG
               value: "ru"
+
+            - name: APP_NATS_ADDRESS
+              value: "nats://nats.tg-step-counter-dev.svc:4222"
 
             - name: APP_TG_TOKEN
               valueFrom:

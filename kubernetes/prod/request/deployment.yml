@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
         - name: request
-          image: agrrh/tg-step-counter:0.5.0
+          image: agrrh/tg-step-counter:0.5.1
 
           env:
             - name: TZ

@@ -5,7 +5,7 @@ import nats
 import os
 import pickle
 import redis
-import schedule
+import aioschedule as schedule
 import sys
 import time
 

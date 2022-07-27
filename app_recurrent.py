@@ -150,9 +150,7 @@ async def job():
     await send_reminder(nats_handler=nc)
 
 
-if __name__ == "__main__":
-    logging.critical("Starting svc/recurrent")
-
+async def main():
     if app_dev_mode:
         logging.warning("Running single dev run")
 
@@ -163,7 +161,12 @@ if __name__ == "__main__":
 
     schedule.every().day.at(notify_time).do(job)
 
-    loop = asyncio.get_event_loop()
     while True:
-        loop.run_until_complete(schedule.run_pending())
+        schedule.run_pending()
         time.sleep(5)
+
+
+if __name__ == "__main__":
+    logging.critical("Starting svc/recurrent")
+
+    asyncio.run(main())

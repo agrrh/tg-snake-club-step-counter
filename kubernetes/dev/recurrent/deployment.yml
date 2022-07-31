@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
         - name: recurrent
-          image: agrrh/tg-step-counter:0.5.1
+          image: agrrh/tg-step-counter:0.5.2
 
           env:
             - name: TZ
@@ -59,6 +59,9 @@ spec:
 
             - name: APP_TG_NOTIFY_TIME
               value: "10:00"
+
+            - name: APP_TG_RESULT_TIME
+              value: "20:00"
 
             - name: APP_TG_CHALLENGE_TAG
               value: "#конкурсшаги"

@@ -28,7 +28,8 @@ chat_id = os.environ.get("APP_TG_CHAT_ID")
 app_dev_mode = os.environ.get("APP_DEV_MODE") or False  # Would be True on non-empty string
 challenge_tag = os.environ.get("APP_TG_CHALLENGE_TAG")
 
-notify_time = os.environ.get("APP_TG_NOTIFY_TIME", "10:00")
+time_notify = os.environ.get("APP_TG_NOTIFY_TIME", "10:00")
+time_result = os.environ.get("APP_TG_RESULT_TIME", "20:00")
 
 google_service_account_fname = os.environ.get("APP_GOOGLE_SA_PATH", "./config/google-service-account.json")
 google_sheet_uri = os.environ.get("APP_GOOGLE_SHEET_URI")
@@ -140,8 +141,17 @@ async def send_leaderboards_if_new_month_starts(nats_handler=None):
     await nats_handler.publish(nats_subject_, data)
 
 
-async def job():
-    logging.warning("Starting job")
+async def job_notify():
+    logging.warning("Starting job/notify")
+
+    logging.warning(f"Connecting to NATS at {nats_address}")
+    nc = await nats.connect(nats_address)
+
+    await send_reminder(nats_handler=nc)
+
+
+async def job_result():
+    logging.warning("Starting job/result")
 
     logging.warning(f"Connecting to NATS at {nats_address}")
     nc = await nats.connect(nats_address)
@@ -149,19 +159,18 @@ async def job():
     if date.today().day == 1 or app_dev_mode:
         await send_leaderboards_if_new_month_starts(nats_handler=nc)
 
-    await send_reminder(nats_handler=nc)
-
 
 async def main():
     if app_dev_mode:
         logging.warning("Running single dev run")
 
-        schedule.every(1).seconds.do(job)
+        schedule.every(1).seconds.do(job_notify)
         time.sleep(1)
         await schedule.run_pending()
         sys.exit()
 
-    schedule.every().day.at(notify_time).do(job)
+    schedule.every().day.at(time_notify).do(job_notify)
+    schedule.every().day.at(time_result).do(job_result)
 
     while True:
         await schedule.run_pending()

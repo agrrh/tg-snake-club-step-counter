@@ -60,6 +60,9 @@ spec:
             - name: APP_TG_NOTIFY_TIME
               value: "10:00"
 
+            - name: APP_TG_RESULT_TIME
+              value: "20:00"
+
             - name: APP_TG_CHALLENGE_TAG
               value: "#конкурсшаги"
 

@@ -55,8 +55,11 @@ async def handler_leaderboard(message, sheet, nats_handler=None):
         _tg_user = TGUser(id=tg_user_id)
         _tg_user_handler = TGUserSpreadsheetHandler(sheet, _tg_user)
 
-        monthly_sum_by_user[tg_user_id] = _tg_user_handler.get_monthly(result_dummy.month)
-        user_aliases[tg_user_id] = _tg_user_handler.get_user_note()
+        user_monthly = _tg_user_handler.get_monthly(result_dummy.month)
+
+        if user_monthly is not None:
+            monthly_sum_by_user[tg_user_id] = user_monthly
+            user_aliases[tg_user_id] = _tg_user_handler.get_user_note()
 
     logging.debug(f"Resulting map: {monthly_sum_by_user}")
 

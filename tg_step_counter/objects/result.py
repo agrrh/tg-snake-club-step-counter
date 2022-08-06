@@ -28,9 +28,9 @@ class Result(object):
         self,
         date_notation: str = "01.01",
         value: int = 0,
-        date: datetime = datetime.today(),
+        date: datetime = None,
     ):
-        self.date = self.__parse_date_notation(date_notation) if date_notation else date
+        self.date = self.__parse_date_notation(date_notation) if date_notation else datetime.today()
         self.value = value
 
     def __parse_date_notation(self, notation: str) -> datetime:

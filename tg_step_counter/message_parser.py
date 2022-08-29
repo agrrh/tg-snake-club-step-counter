@@ -14,6 +14,11 @@ class MessageParser(object):
     (10000, None)
     >>> mp.parse_add_message('12000 31.12')
     (12000, '31.12')
+
+    >>> mp.parse_add_message('31.12 12000')
+    (12000, '31.12')
+    >>> mp.parse_add_message('31.12 123')
+    (123, '31.12')
     """
 
     def __init__(self):
@@ -45,9 +50,11 @@ class MessageParser(object):
         text = text.strip()
 
         try:
-            value = re.search(r"[1-9][0-9]*", text).group()
-            value = int(value)
+            candidates = re.search(r"^((\d{,6})\s\d\d\.\d\d)|(\d{,6})$", text).groups()
+            candidate = list(filter(None, candidates))[-1]
+            value = int(candidate)
             logging.debug(f"Parsed value {value} from text: {text}")
+
         except ValueError:
             raise ValueError(f"Could not find value in message: {text}")
 

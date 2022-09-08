@@ -2,14 +2,18 @@
 
 Есть чатик, члены которого считают шаги и ведут статистику.
 
-Родилась идея автоматизировать процесс.
+Данный бот реализует автоматизацю этого процесса:
+
+- Каждый день участники указывают количество пройденных шагов
+- Бот ведёт учет
+- В конце месяца отмечается победитель
 
 # План
 
 ## Прототип
 
 - [x] Есть Google Spreadsheet таблица
-- [x] Бот пишет в чат в заданное время (23:59 каждого дня по МСК) с просьбой отметить свой прогресс
+- [x] Бот пишет в чат в заданное время (10:00 каждого дня по МСК) с просьбой отметить свой прогресс
 - [x] Пользователи отвечают боту через Reply, сколько шагов было пройдено
 - [x] Бот записывает информацию в таблицу
 - [ ] Каждый год создаётся новый лист в таблице
@@ -35,34 +39,31 @@
   - [ ] Исправления по интерфейсу к БД
 - [ ] Использование настоящей БД
   - [ ] Выбор и интеграция БД
-  - [ ] Скрипт импорта и экспорта для Spredsheet
+  - [ ] Скрипт импорта и экспорта для Spreadsheet
 
 # Архитектура
 
 ```mermaid
 flowchart LR
-  ext-api((External API))
-  bus
-  request
-  response
-  logic
-  database[(database)]
-  images[(images)]
+  user
+  telegram((telegram))
 
-  subgraph group1
+  bus
+
+  subgraph representation
     request
     response
   end
 
-  subgraph group2
-    logic
+  subgraph logic
+    handler
     recurrent
   end
 
-  ext-api --- request & response
-  request & response --- bus
+  subgraph data
+    database[(database)]
+    images[(images)]
+  end
 
-  bus --- logic & recurrent
-  recurrent & logic --- database
-  recurrent & logic -.- images
+  user <--> telegram <--> representation <--> bus <--> logic <--> data
 ```

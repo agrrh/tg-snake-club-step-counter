@@ -1,8 +1,8 @@
 ---
 
 reminder_mark: ⏰
-reminder_notify: >-
-    To add your {challenge_tag} results for {current_date_human}, send steps count in reply to this message.
+reminder_notify: |-
+  To add your {challenge_tag} results for {current_date_human}, send steps count in reply to this message.
 
 add_parse_error: |-
   Sadly, I can't recognize steps count or date in your message.
@@ -15,20 +15,20 @@ add_parse_error: |-
 
   First is for current date, second for specific date.
 
-add_future_error: >-
+add_future_error: |-
   Sadly, I can't add results to the future.
 
-webhook_error_parse_count: >-
+webhook_error_parse_count: |-
   Sadly, I can't recognize steps count in your message.
   Reply to original message, specifying only number.
 
-webhook_error_write_results: >-
+webhook_error_write_results: |-
   Sadly, I can't write your results now, please try again later.
 
-webhook_results_written: >-
+webhook_results_written: |-
   Thanks, your results were written. Total count for this month os around {monthly_sum_human} steps.
 
-webhook_results_monthly: >-
+webhook_results_monthly: |-
   Your monthly results totals to {monthly_sum} steps.
 
 webhook_leaderboard_moment: |-
@@ -42,7 +42,7 @@ webhook_leaderboard_monthly: |-
   With result of:
   📈 {leader_value} steps!
 
-help_reply: >-
+help_reply: |-
   Step Counter is a Telegram-bot made for groups of people, who compete between each other in walking.
 
   📄 Full documentation: https://agrrh.github.io/tg-step-counter/

@@ -1,3 +1,8 @@
+<!--
+  TODO Try readme index plugin
+  https://github.com/benbalter/jekyll-readme-index
+-->
+
 # Step Counter
 
 Step Counter это Telegram-бот, который был создан для группы людей, соревнующихся между собой в количестве пройденных шагов.

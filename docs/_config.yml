@@ -8,3 +8,6 @@ description:
   - Telegram-бот для группы людей, соревнующихся в количестве пройденных шагов
 
 show_downloads: false
+
+github:
+  is_project_page: false

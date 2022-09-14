@@ -1,5 +1,6 @@
 ---
 
+title: Встречайте победителя
 permalink: /praise-the-winner/
 
 ---

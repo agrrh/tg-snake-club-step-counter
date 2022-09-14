@@ -1,5 +1,6 @@
 ---
 
+title: Вносите свои результаты
 permalink: /adding-results/
 
 ---

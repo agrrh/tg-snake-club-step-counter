@@ -1,5 +1,6 @@
 ---
 
+title: Добавьте бота в группу
 permalink: /add-bot-to-group/
 
 ---

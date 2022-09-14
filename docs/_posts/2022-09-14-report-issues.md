@@ -1,5 +1,6 @@
 ---
 
+title: Сообщайте о проблемах
 permalink: /report-issues/
 
 ---

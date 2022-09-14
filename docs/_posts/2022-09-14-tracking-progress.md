@@ -1,5 +1,6 @@
 ---
 
+title: Отслеживайте прогресс
 permalink: /tracking-progress/
 
 ---

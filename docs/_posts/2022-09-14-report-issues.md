@@ -4,6 +4,8 @@ permalink: /report-issues/
 
 ---
 
+[На главную страницу](index.md)
+
 # Сообщайте о проблемах
 
 <!-- TODO Implement feature and remove warning -->

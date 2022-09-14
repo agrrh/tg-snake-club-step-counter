@@ -15,14 +15,16 @@
 
 ```mermaid
 flowchart LR
-  user
-  telegram((telegram))
-
-  bus
+  user((Actor))
+  telegram[Telegram API]
 
   subgraph representation
     request
     response
+  end
+
+  subgraph events
+    bus[(Events)]
   end
 
   subgraph logic
@@ -35,5 +37,14 @@ flowchart LR
     images[(images)]
   end
 
-  user <--> telegram <--> representation <--> bus <--> logic <--> data
+  user <--> telegram
+
+  telegram --> request
+  response --> telegram
+
+  request --> bus --> handler
+  recurrent --> bus --> response
+
+  handler -.-> data
+  recurrent -.-> data
 ```

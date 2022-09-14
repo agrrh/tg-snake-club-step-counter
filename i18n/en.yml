@@ -43,4 +43,6 @@ webhook_leaderboard_monthly: |-
   📈 {leader_value} steps!
 
 help_reply: >-
-  Howdy, how are you doing?
+  Step Counter is a Telegram-bot made for groups of people, who compete between each other in walking.
+
+  📄 Full documentation: https://agrrh.github.io/tg-step-counter/

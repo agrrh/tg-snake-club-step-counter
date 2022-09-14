@@ -20,6 +20,8 @@ bot = AsyncTeleBot(bot_token, parse_mode="Markdown")
 app_language = os.environ.get("APP_LANG", "en")
 i18n = I18n(lang=app_language)
 
+# TODO Add /support command for users to be able to report issues
+
 # fmt: off
 SUBJECT_PREFIXES = {
     "start": "logic.help",

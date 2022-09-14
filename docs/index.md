@@ -11,7 +11,8 @@ Step Counter это Telegram-бот, который был создан для �
 
 ## [Как начать пользоваться?](./getting-started.html)
 
-## Авторы
+## Создатели
 
-- [Kirill](https://github.com/agrrh)
-- [Tatiana](https://github.com/stska007)
+- [agrrh](https://github.com/agrrh)
+- [stska007](https://github.com/stska007)
+- Бета-тестировщики из 🤘**The Snake Club Revenge**🤘

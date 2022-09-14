@@ -32,4 +32,4 @@ permalink: /tracking-progress/
 
 # Далее
 
-Вы можете дождаться [завершения конкурса](./praise-the-winner/).
+Вы можете дождаться [завершения конкурса](../praise-the-winner/).

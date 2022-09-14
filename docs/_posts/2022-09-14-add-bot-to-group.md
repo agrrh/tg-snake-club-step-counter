@@ -6,6 +6,14 @@ permalink: /add-bot-to-group/
 
 # Добавьте бота в группу
 
+## Кратко
+
+Достаточно добавить в группу бота по [логину](https://t.me/step_counter_bot):
+
+`step_counter_bot`
+
+## Пошаговое описание
+
 Откройте желаемую группу:
 
 ![01](../img/demo/add-bot-to-group/01-fresh-group.png)

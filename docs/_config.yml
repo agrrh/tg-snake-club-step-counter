@@ -2,10 +2,8 @@
 
 theme: jekyll-theme-cayman
 
-title:
-  - Step Counter
-description:
-  - Telegram-бот для группы людей, соревнующихся в количестве пройденных шагов
+title: Step Counter
+description: Telegram-бот для группы людей, соревнующихся в количестве пройденных шагов
 
 show_downloads: false
 

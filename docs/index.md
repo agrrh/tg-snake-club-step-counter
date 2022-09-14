@@ -1,37 +1,30 @@
-## Welcome to GitHub Pages
+# Step Counter
 
-You can use the [editor on GitHub](https://github.com/agrrh/tg-step-counter/edit/master/docs/index.md) to maintain and preview the content for your website in Markdown files.
+Step Counter bot - создан для группы людей, которые соревнуются между собой в количестве пройденных шагов.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Легкий и понятный в управлении, подойдет для пользователей всех возрастов.
 
-### Markdown
+## Возможности
+### Подсчитывает результаты участников
+- Отправляет сообщение с напоминанием о внесении данных каждый день в 10.00 MSK.
+- Принимает ответ на свое сообщение и вносит данные пользователя
+- Отвечает на внесенные данные пользователя ответом, содержащим округленную сумму шагов пользователя за текущий месяц
+- Показывает результаты ваших внесенных данных за месяц в виде графика
+- Показывает лидера по количеству шагов, актуального на момент запроса
+- Может вносить результаты одной командой за любой прошедший или текущий день без поиска сообщения с уведомлением
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+### Показывает победителя за текущий календарный месяц
 
-```markdown
-Syntax highlighted code block
 
-# Header 1
-## Header 2
-### Header 3
 
-- Bulleted
-- List
+## Как начать пользоваться?
 
-1. Numbered
-2. List
+Найдите в поиске "Step Counter" и зайдите в бота.
 
-**Bold** and _Italic_ and `Code` text
+### Добавьте бота в группу
+### Как добавить свои результаты
+### Как посмотреть свои результаты
+### Как посмотреть общий рейтинг
+### Как работает конкурсная система
 
-[Link](url) and ![Image](src)
-```
-
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/agrrh/tg-step-counter/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+## Авторы

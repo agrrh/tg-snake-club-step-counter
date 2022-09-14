@@ -59,5 +59,5 @@ Step Counter bot - создан для группы людей, которые �
 
 ## Авторы
 
-- Киса
-- Кисовна
+- [Kirill](https://github.com/agrrh)
+- [Tatiana](https://github.com/stska007)

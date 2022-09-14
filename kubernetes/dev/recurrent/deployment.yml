@@ -11,9 +11,9 @@ metadata:
     app: tg-step-counter
     component: recurrent
   annotations:
-      keel.sh/policy: major
-      keel.sh/trigger: poll
-      keel.sh/pollSchedule: "@every 15m"
+    keel.sh/policy: patch
+    keel.sh/trigger: poll
+    keel.sh/pollSchedule: "@every 15m"
 
 spec:
   replicas: 1
@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
         - name: recurrent
-          image: agrrh/tg-step-counter:0.5.4
+          image: agrrh/tg-step-counter:0.5.1  # WARNING It would be automatically updated
 
           env:
             - name: TZ

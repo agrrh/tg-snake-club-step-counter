@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
         - name: recurrent
-          image: agrrh/tg-step-counter:0.5.8  # WARNING It would be automatically updated
+          image: agrrh/tg-step-counter:0.5.9  # WARNING It would be automatically updated
 
           env:
             - name: TZ

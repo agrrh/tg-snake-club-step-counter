@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
         - name: response
-          image: agrrh/tg-step-counter:0.5.7  # WARNING It would be automatically updated
+          image: agrrh/tg-step-counter:0.5.9  # WARNING It would be automatically updated
 
           env:
             - name: TZ

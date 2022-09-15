@@ -14,11 +14,15 @@ class MessageParser(object):
     (10000, None)
     >>> mp.parse_add_message('12000 31.12')
     (12000, '31.12')
+    >>> mp.parse_add_message('8000 15.09')
+    (8000, '15.09')
 
     >>> mp.parse_add_message('31.12 12000')
     (12000, '31.12')
     >>> mp.parse_add_message('31.12 123')
     (123, '31.12')
+    >>> mp.parse_add_message('11.09 8000')
+    (8000, '11.09')
     """
 
     def __init__(self):
@@ -39,9 +43,9 @@ class MessageParser(object):
         text = text.strip()
 
         try:
-            date = re.search(r"[0-9]{2}\.[0-9]{2}", text).group()
+            date = re.search(r"(?P<date>\d\d\.\d\d)", text).group("date")
             logging.debug(f"Parsed date {date} from text: {text}")
-        except ValueError:
+        except (AttributeError, ValueError):
             raise ValueError(f"Could not find date in message: {text}")
 
         return date
@@ -50,12 +54,11 @@ class MessageParser(object):
         text = text.strip()
 
         try:
-            candidates = re.search(r"^((\d{,6})\s\d\d\.\d\d)|(\d{,6})$", text).groups()
-            candidate = list(filter(None, candidates))[-1]
-            value = int(candidate)
+            candidate = re.search(r"^(\d\d\.\d\d )?(?P<value>\d{,6})( \d\d\.\d\d)?$", text)
+            value = int(candidate.group("value"))
             logging.debug(f"Parsed value {value} from text: {text}")
 
-        except ValueError:
+        except (AttributeError, ValueError):
             raise ValueError(f"Could not find value in message: {text}")
 
         try:

@@ -54,7 +54,7 @@ class MessageParser(object):
         text = text.strip()
 
         try:
-            candidate = re.search(r"^(\d\d\.\d\d )?(?P<value>\d{,6})( \d\d\.\d\d)?$", text)
+            candidate = re.search(r"(?P<value>\d{3,6})", text)
             value = int(candidate.group("value"))
             logging.debug(f"Parsed value {value} from text: {text}")
 

@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: logic
-          image: agrrh/tg-step-counter:0.5.8
+          image: agrrh/tg-step-counter:0.5.9
 
           env:
             - name: TZ

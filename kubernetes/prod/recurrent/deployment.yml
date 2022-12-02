@@ -12,7 +12,7 @@ metadata:
     component: recurrent
 
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: tg-step-counter

@@ -11,6 +11,7 @@ from tg_step_counter.i18n import Internationalization as I18n
 
 
 nats_address = os.environ.get("APP_NATS_ADDRESS", "nats://nats.nats.svc:4222")
+nats_prefix = os.environ.get("APP_NATS_PREFIX", "")
 
 bot_username = os.environ.get("APP_TG_USERNAME", "step_counter_dev_bot")
 
@@ -24,12 +25,12 @@ i18n = I18n(lang=app_language)
 
 # fmt: off
 SUBJECT_PREFIXES = {
-    "start": "logic.help",
-    "help": "logic.help",
-    "me": "logic.stats",
-    "add": "logic.add",
-    "leaderboard": "logic.leaderboard",
-    "result": "logic.result",
+    "start": f"{nats_prefix}logic.help",
+    "help": f"{nats_prefix}logic.help",
+    "me": f"{nats_prefix}logic.stats",
+    "add": f"{nats_prefix}logic.add",
+    "leaderboard": f"{nats_prefix}logic.leaderboard",
+    "result": f"{nats_prefix}logic.result",
 }
 # fmt: on
 

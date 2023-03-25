@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
         - name: request
-          image: agrrh/tg-step-counter:0.5.9
+          image: agrrh/tg-step-counter:0.5.10
 
           env:
             - name: TZ
@@ -39,7 +39,10 @@ spec:
               value: ""
 
             - name: APP_NATS_ADDRESS
-              value: "nats://nats.tg-step-counter-prod.svc:4222"
+              value: "nats://nats.bus.svc:4222"
+
+            - name: APP_NATS_PREFIX
+              value: "tg-step-counter."
 
             - name: APP_TG_TOKEN
               valueFrom:

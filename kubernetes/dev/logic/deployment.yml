@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
         - name: logic
-          image: agrrh/tg-step-counter:0.5.9  # WARNING It would be automatically updated
+          image: agrrh/tg-step-counter:0.5.10
 
           env:
             - name: TZ
@@ -43,13 +43,13 @@ spec:
               value: "ru"
 
             - name: APP_NATS_ADDRESS
-              value: "nats://nats.tg-step-counter-dev.svc:4222"
+              value: "nats://nats.bus-dev.svc:4222"
 
             - name: APP_NATS_SUBJECT
-              value: "logic.>"
+              value: "tg-step-counter.logic.>"
 
             - name: APP_NATS_SUBJECT_RESPONSE
-              value: "response"
+              value: "tg-step-counter.response"
 
             - name: APP_TG_TOKEN
               valueFrom:
